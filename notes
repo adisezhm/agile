@@ -6,7 +6,8 @@
    4. git add agile/u.agile agile/generic.agile etc.
    5. git commit -m "Initial commit"
 
-   6. curl -u <your-user-name> https://api.github.com/<user-name>/repos -d '{"name":"agile"}'
+   6. curl -u <your-user-name> https://api.github.com/user/repos -d '{"name":"agile"}'
+      Note : it is .../user/repos ! literally !
    7. git remote add origin https://github.com/<your-user-name>/agile
 
    8. git push -u origin master
