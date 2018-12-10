@@ -1,0 +1,77 @@
+#!/bin/bash
+#
+
+#  i.agile - INSERT functions, used by agile script
+#  Copyright (C) 2018 adisezhm@gmail.com
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+
+#  insert into projectTable
+iProject()
+{
+	if [[ $# -ne 8 ]]; then
+		echo "Usage : iProject <did> <pid> <pName> <pDesc> <pAssignee> <pStartDate> <pEndDate> <pStatus>" >&2
+		echo "numArgs: $#, expected 8" >&2
+		return 1
+	fi
+	did=$1
+	pid=$2; pName=$3; pDesc=$4
+	pAssignee=$5; pStart=$6; pEnd=$7; pStatus=$8
+
+	iProjectSqlCmd="insert into ${pTbl} (did, pid, pName, pDesc, pAssignee, pStart, pEnd, pStatus) values (${did}, ${pid}, '${pName}', '${pDesc}', '${pAssignee}', '${pStart}', '${pEnd}', '${pStatus}')"
+
+	sql iProject "${iProjectSqlCmd}"
+	
+	return $?
+}
+
+#  insert into sprintTable
+iSprint()
+{
+	if [[ $# -ne 9 ]]; then
+		echo "Usage : iSprint <sid> <did> <pid> <sName> <sDesc> <sAssignee> <sStartDate> <sEndDate> <sStatus>" >&2
+		echo "numArgs: $#, expected 9" >&2
+		return 1
+	fi
+	sid=$1; did=$2; pid=$3; sName=$4; sDesc=$5
+	sAssignee=$6; sStart=$7; sEnd=$8; sStatus=$9
+
+	iSprintSqlCmd="insert into ${sTbl} (sid, did, pid, sName, sDesc, sAssignee, sStart, sEnd, sStatus) values (${sid}, ${did}, ${pid}, '${sName}', '${sDesc}', '${sAssignee}', '${sStart}', '${sEnd}', '${sStatus}')"
+
+	sql iSprint "${iSprintSqlCmd}"
+	
+	return $?
+}
+
+#  insert into workitem Table
+iWi()
+{
+	if [[ $# -ne 15 ]]; then
+		echo "Usage : iWi <wiid> <did> <pid> <sid> <wiName> <wiDesc> <type> <priority> <epic> <wiAssignee> <wiStartDate> <wiEndDate> <sStatus> <duration> <estimationPoints> " >&2
+		echo "numArgs: $#, expected 15" >&2
+		return 1
+	fi
+	wiid=$1; did=$2; pid=$3; sid=$4
+	wiName=$5; wiDesc=$6
+	typE=$7; priority=$8; epic=$9; wiAssignee=${10}
+	wiStart=${11}; wiEnd=${12}; wiStatus=${13}
+	duration=${14} estimationPoints=${15}
+
+	iWiSqlCmd="insert into ${wiTbl} (wiid, did, pid, sid, wiName, wiDesc, type, priority, epic, wiAssignee, wiStart, wiEnd, wiStatus, duration, estimationPoints) values (${wiid}, ${did}, ${pid}, ${sid}, '${wiName}', '${wiDesc}', '${typE}', '${priority}', '${epic}', '${wiAssignee}', '${wiStart}', '${wiEnd}', '${wiStatus}', '${duration}', '${estimationPoints}')"
+
+	sql iWi "${iWiSqlCmd}"
+	
+	return $?
+}

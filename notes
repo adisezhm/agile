@@ -1,0 +1,80 @@
+1. Create repository
+   1. mkdir ~/agile; cd ~/agile
+   2. git init
+
+   3. Create file(s), eg u.agile, generic.agile etc.
+   4. git add agile/u.agile agile/generic.agile etc.
+   5. git commit -m "Initial commit"
+
+   6. curl -u <your-user-name> https://api.github.com/<user-name>/repos -d '{"name":"agile"}'
+   7. git remote add origin https://github.com/<your-user-name>/agile
+
+   8. git push -u origin master
+
+2. What 
+   . Uses sqlite3 database
+   . Linux OS
+   . Example usage is in : sample
+
+3. .sqliterc - contents of SQLITE3 RC file
+   PRAGMA foreign_keys = ON;
+
+A. TODO - NOT IN priority order
+   0.  Define the model, for what all projects user has access to
+   1.  Add foreign keys, in-table keys, non-null field constraints
+       and indices
+   2.  Use user id, instead of user name
+   3.  Default domain id (DID) may be use env variable,
+       may be user profile default (and more than one) DID
+   4.  WorkItem insert
+   5.  Epic support
+   6.  Story support
+   7.  Estimation Points support
+   8.  Priority support
+   9.  agile script, REPORT:
+       . team velocity
+       . user velocity
+       . project status
+       . list WI backlog
+       . list SPRINT backlog
+       . active sprint(s)
+       . user under/over-loading
+       . WI under/over-loading
+       . All of reports to be user CUSTOMIZABLE
+       . User defined report !! Well, its just yet another report, so...
+       etc.
+   10. agile script, CREATE.UPDATE.DELETE:
+       . Create Project, Sprint, WorkItem
+       . Update Project, Sprint, WorkItem
+           . start sprint (ie make it active)
+           . done sprint (ie mark it done)
+           . move WI from backlog to a sprint and vice-versa
+       . Delete Project, Sprint, WorkItem
+       etc.
+   11. REPORT: to display text instead of numeric id's
+   12. Enumerations on 'status
+       status    : backlog, completed, active, stuck, deprecated
+       wi-type   : story, task, bug
+   13. Atomic DB updates, if there are any multiple table updates
+   15. System wide, user specific, directory specific config files, env based config 
+       - incl. current/default project configuration
+   16. Robust error reporting
+
+B. FUTURE
+   1.  Authentication
+   2.  Authorization
+   3.  Graphical interface
+   4.  CSV,Excel,GSheets,PDF exports
+   5.  Imports
+   6.  Performance
+   7.  Multi user (and hence UPDATE, REPORT) enablement
+   8.  Multi Session (of same user) enablement
+   9.  Combined Multi User and Multi Session enablement
+   10. History of activities
+   11. Integration with bugzilla, really ?
+   12. Backup & Restore
+   13. High availability
+   14. Cloud deployment, In-house deployment
+   15. Voice Integration
+   16. Integration with Alexa, Echo etc.
+   17. C/C++/Python and other bindings

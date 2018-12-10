@@ -1,0 +1,55 @@
+#!/bin/bash
+#
+
+#  schema.agile - SCHEMA functions, used by agile script
+#  Copyright (C) 2018 adisezhm@gmail.com
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+
+initSchemaSqlCmds()
+{
+	pTblSchema="CREATE TABLE ${pTbl} ( did integer NOT NULL, pid integer NOT NULL, pName text, pDesc text, pAssignee text, pStart date, pEnd date, pStatus text NOT NULL, UNIQUE(did, pid) )"
+
+	#  the parent key needs to be PRIMARY KEY / UNIQUE
+	#  to satisfy the foreign_key spec of workitem table,
+	#  so UNIQUE( sid, did, pid )
+	sTblSchema="CREATE TABLE ${sTbl} ( sid integer NOT NULL, did integer NOT NULL, pid integer NOT NULL, sName text, sDesc text, sAssignee text, sStart date, sEnd date, sStatus text NOT NULL, FOREIGN KEY(did, pid) REFERENCES ${pTbl}(did, pid), UNIQUE(sid, did, pid) )"
+
+	wiTblSchema="CREATE TABLE ${wiTbl} (wiid integer NOT NULL UNIQUE, did integer NOT NULL, pid integer NOT NULL, sid integer, wiName text, wiDesc text, type text, priority text, epic text, wiAssignee text, wiStart date, wiEnd date, wiStatus text NOT NULL, duration text, estimationPoints integer, FOREIGN KEY(sid, did, pid) REFERENCES ${sTbl}(sid, did, pid) )"
+
+	return 0
+}
+
+createSchemas()
+{
+	echo "creating SCHEMAS: $pTbl, $sTbl, $wiTbl"
+	${sql} -bail ${agileDb} << EOCS
+$pTblSchema;
+$sTblSchema;
+$wiTblSchema;
+EOCS
+	echo
+}
+
+listSchemas()
+{
+	echo "list SCHEMAS"
+	${sql} -bail ${agileDb} << EOCS
+.schema 
+EOCS
+}
+
+#  initialize
+initSchemaSqlCmds

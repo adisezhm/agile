@@ -1,0 +1,134 @@
+#!/bin/bash
+#
+
+#  reports.agile - definition of various reports, used by r.agile script
+#  Copyright (C) 2018 adisezhm@gmail.com
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+
+declare -A rSqlTable
+declare -A rSqlWhere
+declare -A rSqlFields
+
+#==== TOP level
+#==== params : none
+
+usage_t()
+{
+	echo "Usage : r <t-p>" >&2
+	return 0
+}
+
+#  t-p - list (p)projects
+rSqlTable["t-p"]="project"
+rSqlWhere["t-p"]=""
+rSqlFields["t-p"]="pid,pStatus,pAssignee,pName"
+
+#==== PROJECT level 'sprints
+#==== params : pid
+usage_p_s()
+{
+	echo "Usage : r <p-s-all | p-s-active | p-s-backlog | p-s-completed> <projectId>" >&2
+	return 0
+}
+
+#  p-s-all - list project-sprints-all
+rSqlTable["p-s-all"]="sprint"
+rSqlWhere["p-s-all"]="pid=\$pid order by sStatus, sid"
+rSqlFields["p-s-all"]="sid,sStatus,sAssignee,sName"
+
+#  p-s-backlog - list project-sprints-backlog
+rSqlTable["p-s-backlog"]="sprint"
+rSqlWhere["p-s-backlog"]="pid=\$pid and sStatus = \'backlog\'"
+rSqlFields["p-s-backlog"]="sid,sStatus,sAssignee,sName"
+
+#  p-s-active - list project-sprints-active
+rSqlTable["p-s-active"]="sprint"
+rSqlWhere["p-s-active"]="pid=\$pid and sStatus = \'active\'"
+rSqlFields["p-s-active"]="sid,sStatus,sAssignee,sStart,sEnd,sName"
+
+#  p-s-completed - list project-sprints-completed
+rSqlTable["p-s-completed"]="sprint"
+rSqlWhere["p-s-completed"]="pid=\$pid and sStatus = \'completed\'"
+rSqlFields["p-s-completed"]="sid,sStatus,sAssignee,sName"
+
+#==== PROJECT level 'workitem
+#==== params : pid
+usage_p_w()
+{
+	echo "Usage : r <p-w-all | p-w-active | p-w-backlog | p-w-completed> <projectId>" >&2
+	return 0
+}
+
+#  p-w-all - list project-workitem-all
+rSqlTable["p-w-all"]="workitem"
+rSqlWhere["p-w-all"]="pid=\$pid order by wiStatus, wiid"
+rSqlFields["p-w-all"]="wiid,sid,wiStatus,wiAssignee,wiName"
+
+#  p-w-backlog - list project-workitems-backlog
+rSqlTable["p-w-backlog"]="workitem"
+rSqlWhere["p-w-backlog"]="pid=\$pid and wiStatus = \'backlog\'"
+rSqlFields["p-w-backlog"]="wiid,sid,wiStatus,wiAssignee,wiName"
+
+#  p-w-active - list project-workitems-active
+rSqlTable["p-w-active"]="workitem"
+rSqlWhere["p-w-active"]="pid=\$pid and wiStatus = \'active\'"
+rSqlFields["p-w-active"]="wiid,sid,wiStatus,wiAssignee,wiStart,wiEnd,wiName"
+
+#  p-w-completed - list project-workitems-completed
+rSqlTable["p-w-completed"]="workitem"
+rSqlWhere["p-w-completed"]="pid=\$pid and wiStatus = \'completed\'"
+rSqlFields["p-w-completed"]="wiid,sid,wiStatus,wiAssignee,wiName"
+
+#==== SPRINT level 'workitem
+#==== params : pid, sid
+
+usage_s_w()
+{
+	echo "Usage : r <s-w-all | s-w-active | s-w-backlog | s-w-completed> <projectId> <sprintId>" >&2
+	return 0
+}
+
+#  s-w-all - list sprint-workitem-all
+rSqlTable["s-w-all"]="workitem"
+rSqlWhere["s-w-all"]="pid=\$pid and sid=\$sid order by wiStatus, wiid"
+rSqlFields["s-w-all"]="wiid,sid,wiStatus,wiAssignee,wiName"
+
+#  s-w-backlog - list sprint-workitem-all
+rSqlTable["s-w-backlog"]="workitem"
+rSqlWhere["s-w-backlog"]="pid=\$pid and sid=\$sid and wiStatus = \'backlog\'"
+rSqlFields["s-w-backlog"]="wiid,sid,wiStatus,wiAssignee,wiName"
+
+#  s-w-active - list sprint-workitems-active
+rSqlTable["s-w-active"]="workitem"
+rSqlWhere["s-w-active"]="pid=\$pid and sid=\$sid and wiStatus = \'active\'"
+rSqlFields["s-w-active"]="wiid,sid,wiStatus,wiAssignee,wiStart,wiEnd,wiName"
+
+#  s-w-completed - list sprint-workitems-completed
+rSqlTable["s-w-completed"]="workitem"
+rSqlWhere["s-w-completed"]="pid=\$pid and sid=\$sid and wiStatus = \'completed\'"
+rSqlFields["s-w-completed"]="wiid,sid,wiStatus,wiAssignee,wiName"
+
+
+usage_system()
+{
+	usage_t
+	usage_p_s
+	usage_p_w
+
+	usage_s_w
+
+	return $?
+}

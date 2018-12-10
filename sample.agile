@@ -1,0 +1,91 @@
+#!/bin/bash
+#
+
+#    sample.sh - Sample usage of Agile management tool
+#    Copyright (C) 2018 adisezhm@gmail.com
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+
+smso=$(tput smso)
+rmso=$(tput rmso)
+
+echo "${smso}cSchemas${rmso}"
+rm -f agile.db
+agile createSchemas
+echo
+
+#==== iProject <did> <pid> <name> <pDesc> <owner> <pStartDate> <pEndDate> <status>
+echo "${smso}iProject${rmso}"
+agile iProject 20 414446 k4 "k4Project" self 2018-12-06 2019-02-06 active
+agile iProject 88 800088 l4 "l4Project" self 2019-01-06 2019-03-06 backlog
+echo
+
+#==== q <tableName> [whereConditon]
+#agile q project "status='active'"
+#agile q project "status='backlog'"
+
+#==== iSprint <sid> <did> <pid> <name> <sDesc> <owner> <sStartDate> <sEndDate> <status>
+echo "${smso}iSprint${rmso}"
+agile  iSprint 25001 20 414446  sReqs   sReqs   user4  0 0 active     #  good
+agile  iSprint 25002 20 414446  xyz     xyz     user5  0 0 completed  #  good
+#agile iSprint 25001 20 414446  sReqs   sReqs   user4  0 0 active     #  error: duplicate sid
+#agile iSprint 25002 20 4144460 sReqs   sReqs   user4  0 0 active     #  error: foreign key not found
+agile  iSprint 25003 20 414446  sDesign sDesign user6  0 0 active     #  good
+agile  iSprint 25004 20 414446  abc     abc     user6  0 0 active     #  good
+agile  iSprint 25005 20 414446  spr8    spr8    user6  0 0 backlog    #  good
+agile  iSprint 25006 20 414446  spr9    spr9    user6  0 0 backlog    #  good
+agile  iSprint 25007 20 414446  10spr   10spr   user6  0 0 completed  #  good
+echo
+
+#==== del <tableName> <rowId>
+#agile del sprint 1
+
+#==== delW <tableName> <whereConditon>
+#agile delW sprint "name='sDesign'"
+
+#==== u <tableName> <rowId> <field=value>
+#agile u sprint 1 "status='backlog'"
+
+#==== uW <tableName> <field=value> <whereCondition>
+#agile u sprint "status='active'" "where sid=25002"
+
+# iWi <wiid> <did> <pid> <sid> <name> <wiDesc> <type> <priority> <epic> <wiAssignee> <wiStartDate> <wiEndDate> <status> <duration> <estimationPoints> 
+echo "${smso}iWi${rmso}"
+#  pass NULL for SID, to prevent sid foreign-key-constraint-exception
+agile iWi  50000 20 414446 NULL "FirstTask" "First Task" task P2 none user.10 0 0 backlog 2w 13
+agile iWi  50001 20 414446 25003 "ErrorReporting" "Error Reporting" task P2 none user.10 0 0 active 2w 13
+agile iWi  50002 20 414446 25003 "ErrorHandling"  "Error Handling"  task P2 none user.10 0 0 completed 1w 17
+echo
+
+#  q <tableName>
+#  q <tableName> <whereConditon>
+#  q <tableName> <whereConditon> [fieldList]
+q()
+{
+	echo "${smso}q - project${rmso}"
+	agile q project
+	echo
+
+	echo "${smso}q - sprint${rmso}"
+	agile q sprint
+	echo
+
+	echo "${smso}q - workitem${rmso}"
+	agile q workitem
+	agile q workitem "sid is NULL" "rowid,wiid, pid, sid, wiName"
+	echo
+}
+
+q

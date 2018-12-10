@@ -1,0 +1,64 @@
+#!/bin/bash
+#
+
+#  u.agile - UPDATE functions, used by agile script
+#  Copyright (C) 2018 adisezhm@gmail.com
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+
+#  update command, using where condition
+uW()
+{
+	if [[ $# -ne 3 ]]; then
+		echo "Usage : uW <tableName> <field=value> <whereConditon>" >&2
+		echo "numArgs: $#, expected 3" >&2
+		return 1
+	fi
+	
+	#  table name, field=value, where
+	t=$1
+	fv="$2"
+	wcond="$3"
+
+	#  where condition
+	w=""  #  this is dangerous - updates all rows !!
+	if [[ ! -z ${wcond} ]]; then
+		w="where ${wcond}"
+	fi
+
+	uSqlCmd="UPDATE ${t} SET ${fv} ${w}"
+	sql "uW" "${uSqlCmd}"
+
+	return $?
+}
+
+#  update command, using rowid
+u()
+{
+	if [[ $# -ne 3 ]]; then
+		echo "Usage : u <tableName> <rowId> <field=value>" >&2
+		echo "numArgs: $#, expected 3" >&2
+		return 1
+	fi
+	
+	#  table name, rowid, field-value (fv)
+	t=$1
+	rowid=$2
+	fv="$3"
+
+	uW ${t} "${fv}" "rowid=${rowid}"
+
+	return $?
+}

@@ -1,0 +1,85 @@
+#!/bin/bash
+#
+
+#  r.agile - reporting functions, used by agile script
+#  Copyright (C) 2018 adisezhm@gmail.com
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+
+source reports.system.agile
+
+usage()
+{
+	usage_system
+	return $?
+}
+
+#  r/report command
+r()
+{
+	#  get report name
+	rn=$1
+
+	if [[ -z $rn ]]; then
+		usage
+		return 1
+	fi
+
+	#  TOP level reports
+	if [[ "$rn" = "t-p" ]]
+	then
+		if [[ $# -ne 1 ]]; then
+			usageExpectsNoPid
+			return 1
+		fi
+	fi
+
+	#  PROJECT level reports, both project-sprints, and project-workitem
+	if [[   "$rn" = "p-s-all"        ||
+			"$rn" = "p-s-active"     ||
+			"$rn" = "p-s-backlog"    ||
+			"$rn" = "p-s-completed"  ||
+
+			"$rn" = "p-w-all"        ||
+			"$rn" = "p-w-active"     ||
+			"$rn" = "p-w-backlog"    ||
+			"$rn" = "p-w-completed"
+		]]
+	then
+		if [[ $# -ne 2 ]]; then usageExpectsPid; return 1; fi
+		pid=$2
+	fi
+
+	#  SPRINT level reports, includes sprint-workitems
+	if [[   "$rn" = "s-w-all"        ||
+			"$rn" = "s-w-active"     ||
+			"$rn" = "s-w-backlog"    ||
+			"$rn" = "s-w-completed"
+		]]
+	then
+		if [[ $# -ne 3 ]]; then usageExpectsPidSid; return 1; fi
+		pid=$2
+		sid=$3
+	fi
+
+	#  print the report
+	t=${rSqlTable[$rn]}                  # table name
+	w=$(eval "echo ${rSqlWhere[$rn]}")   # where condition
+	f=${rSqlFields[$rn]}                 # fields to print
+
+	q ${t} "${w}" "${f}"
+
+	return $?;
+}
