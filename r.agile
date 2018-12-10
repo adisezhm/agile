@@ -32,18 +32,12 @@ r()
 	#  get report name
 	rn=$1
 
-	if [[ -z $rn ]]; then
-		usage
-		return 1
-	fi
+	if [[ -z $rn ]]; then usage; return 1; fi
 
 	#  TOP level reports
 	if [[ "$rn" = "t-p" ]]
 	then
-		if [[ $# -ne 1 ]]; then
-			usageExpectsNoPid
-			return 1
-		fi
+		if [[ $# -ne 1 ]]; then usage_t; return 1; fi
 	fi
 
 	#  PROJECT level reports, both project-sprints, and project-workitem
@@ -58,7 +52,7 @@ r()
 			"$rn" = "p-w-completed"
 		]]
 	then
-		if [[ $# -ne 2 ]]; then usageExpectsPid; return 1; fi
+		if [[ $# -ne 2 ]]; then usage_p_s; usage_p_w; return 1; fi
 		pid=$2
 	fi
 
@@ -69,7 +63,7 @@ r()
 			"$rn" = "s-w-completed"
 		]]
 	then
-		if [[ $# -ne 3 ]]; then usageExpectsPidSid; return 1; fi
+		if [[ $# -ne 3 ]]; then usage_s_w; return 1; fi
 		pid=$2
 		sid=$3
 	fi
