@@ -1,0 +1,18 @@
+1. TODO
+   - tonnes ! on node.js/Express, on browser client
+
+2. Dependencies
+   npm install moment
+   npm install moment-timezone
+
+3. Set and export NODE_PATH environment variable, esp. if
+   node.js has been installed at non-default path.
+
+   eg
+   export NODE_PATH=:~/node-v10.14.2-linux-x64/lib/node_modules/
+
+4. Run
+   . Run agile.js in a terminal
+     node agile.js
+   . Access it from the browser
+     http://localhost:8000/
