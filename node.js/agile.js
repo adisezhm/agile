@@ -32,63 +32,93 @@ function fmtDate()
 //==================
 const sqlite3 = require('sqlite3').verbose();
 
-let db = new sqlite3.Database('../agile.db', sqlite3.OPEN_READWRITE, (err) => {
-  if (err) {
-    return console.error(err.message);
-  }
-  console.log(fmtDate() + 'Connected to the ./agile.db SQlite3 database.');
-});
+function db_open()
+{
+	db = new sqlite3.Database('../agile.db', sqlite3.OPEN_READWRITE, (err) => {
+		if (err) {
+			return console.error(err.message);
+		}
+		console.log(fmtDate() + 'Connected to the ../agile.db SQlite3 database.');
+	});
 
-var gRow = new Array();
+	return db;
+}
 
-db.serialize(() => {
-  db.each(`SELECT
-           sName as name,
-           sStatus as st,
-           sDesc as desc
-           FROM sprint where sStatus is not NULL`, (err, row) => {
-           //FROM sprint where sStatus = 'active'`, (err, row) => {
-    if (err) {
-      console.error(err.message);
-    }
-	gRow.push(row);
-    // console.log(row);
-  });
-});
+function sprints(db, zsList, callerCb)
+{
+	db.serialize(() => {
+  		db.each(`SELECT sName as name, sStatus as st, sDesc as desc FROM sprint where sStatus = ?`,
+				"active",
+			function (err, row)
+			{
+				if (err) {
+					console.error(err.message);
+				}
+				zsList.push(row);
+			},
+			function() {
+			    callerCb();
+			}
+		); // db.each()
+	}); // db.serialize
+}
 
-// close the database connection
-db.close((err) => {
-  if (err) {
-    return console.error(err.message);
-  }
-  console.log(fmtDate() + 'Closed the ./agile.db SQlite3 database connection.');
+function db_close(db)
+{
+	// close the database connection
+	db.close((err) => {
+		if (err) {
+			return console.error(err.message);
+		}
+		console.log(fmtDate() + 'Closed the ./agile.db SQlite3 database connection.');
+	});
+}
 
-});
+function db_query(urlPathName, httpCb)
+{
+	var sprintsList = new Array();
+
+	db = db_open();
+	sprints(db, sprintsList, 
+			() => {
+					// below two, ordering is not a must !
+					db_close(db);
+					httpCb(sprintsList);
+				}
+			);
+}
 
 
-//=============
-//  HTTP server
-//=============
+//========================
+//  HTTP request - handler
+//========================
 const url = require('url');
 const http = require('http');
-const hostname = '127.0.0.1';
-const port = 8000;
 
 function myPort8K(req, res)
 {
-  var urlParts = url.parse(req.url);
+	var urlParts = url.parse(req.url);
 
-  console.log('\n');
-  console.log(fmtDate() + 'agile.js processing : ' + urlParts.pathname);
+	console.log('\n' + fmtDate() + 'agile.js processing : ' + urlParts.pathname);
 
-  res.writeHead(200, {'Content-Type': 'text/plain'});
-  res.end(JSON.stringify(urlParts.pathname) + '\n\n' + JSON.stringify(gRow));
+	db_query(urlParts.pathname,
+		function(sprintsList)
+		{
+			res.writeHead(200, {'Content-Type': 'text/plain'});
+			res.end(JSON.stringify(urlParts.pathname) + '\n\n' + JSON.stringify(sprintsList));
 
-  console.log(fmtDate() + 'agile.js processed  : ' + JSON.stringify(urlParts.pathname) + '\n' + JSON.stringify(gRow));
+			console.log(fmtDate() + 'agile.js processed  : ' + JSON.stringify(urlParts.pathname) + '\n' + JSON.stringify(sprintsList));
+		}
+	);
 }
 
+//======================
+//  HTTP server - create
+//======================
+const hostname = '127.0.0.1';
+const port = 8000;
 const server = http.createServer(myPort8K);
-
-server.listen(port, hostname, () => {
-  console.log(fmtDate() + `Server running at http://${hostname}:${port}/`);
-});
+server.listen(port, hostname,
+		() => {
+			console.log(fmtDate() + `Server running at http://${hostname}:${port}/`);
+		});
