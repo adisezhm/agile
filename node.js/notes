@@ -14,10 +14,13 @@
    export NODE_PATH=:~/node-v10.14.2-linux-x64/lib/node_modules/
 
 4. Run
-   . Run agile.js in a terminal
-     node agile.js
+   . Run agile.xp.js in a terminal
+     node agile.xp.js
    . Access it from the browser
      http://localhost:8000/
+     http://localhost:8000/sprints/active
+     http://localhost:8000/sprints/backlog
+     http://localhost:8000/sprints/completed
 
 5. More code
 
