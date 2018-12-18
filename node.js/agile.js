@@ -32,7 +32,7 @@ function fmtDate()
 //==================
 const sqlite3 = require('sqlite3').verbose();
 
-let db = new sqlite3.Database('./agile.db', sqlite3.OPEN_READWRITE, (err) => {
+let db = new sqlite3.Database('../agile.db', sqlite3.OPEN_READWRITE, (err) => {
   if (err) {
     return console.error(err.message);
   }
@@ -77,6 +77,8 @@ const port = 8000;
 function myPort8K(req, res)
 {
   var urlParts = url.parse(req.url);
+
+  console.log('\n');
   console.log(fmtDate() + 'agile.js processing : ' + urlParts.pathname);
 
   res.writeHead(200, {'Content-Type': 'text/plain'});

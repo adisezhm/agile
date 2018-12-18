@@ -16,3 +16,26 @@
      node agile.js
    . Access it from the browser
      http://localhost:8000/
+
+5. More code
+
+function formatDate()
+{
+    var dt = new Date();
+
+    d = [
+       ("0" + dt.getDate()).slice(-2),
+       ("0" + (dt.getMonth()+1)).slice(-2),
+       dt.getFullYear(),
+    ].join('-');
+
+    t = [
+       ("0" + dt.getHours()).slice(-2),
+       ("0" + dt.getMinutes()).slice(-2),
+       ("0" + dt.getSeconds()).slice(-2),
+    ].join(':');
+
+	r = d + ' ' + t + ' ';
+
+	return r
+}
