@@ -44,11 +44,11 @@ function db_open()
 	return db;
 }
 
-function sprints(db, zsList, callerCb)
+function sprints(db, urlPathName, zsList, callerCb)
 {
 	db.serialize(() => {
-  		db.each(`SELECT sName as name, sStatus as st, sDesc as desc FROM sprint where sStatus = ?`,
-				"active",
+		db.each(`SELECT sName, sStatus, sDesc FROM sprint where sStatus = ?`,
+				urlPathName.slice(1),
 			function (err, row)
 			{
 				if (err) {
@@ -79,7 +79,7 @@ function db_query(urlPathName, httpCb)
 	var sprintsList = new Array();
 
 	db = db_open();
-	sprints(db, sprintsList, 
+	sprints(db, urlPathName, sprintsList,
 			() => {
 					// below two, ordering is not a must !
 					db_close(db);
@@ -87,7 +87,6 @@ function db_query(urlPathName, httpCb)
 				}
 			);
 }
-
 
 //========================
 //  HTTP request - handler
@@ -107,7 +106,7 @@ function myPort8K(req, res)
 			res.writeHead(200, {'Content-Type': 'text/plain'});
 			res.end(JSON.stringify(urlParts.pathname) + '\n\n' + JSON.stringify(sprintsList));
 
-			console.log(fmtDate() + 'agile.js processed  : ' + JSON.stringify(urlParts.pathname) + '\n' + JSON.stringify(sprintsList));
+			console.log(fmtDate() + 'agile.js processed  : ' + JSON.stringify(urlParts.pathname) + " " + JSON.stringify(sprintsList));
 		}
 	);
 }

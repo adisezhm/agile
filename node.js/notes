@@ -5,6 +5,8 @@
    npm install moment
    npm install moment-timezone
 
+   --save required ?
+
 3. Set and export NODE_PATH environment variable, esp. if
    node.js has been installed at non-default path.
 
