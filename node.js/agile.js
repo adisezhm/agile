@@ -18,6 +18,7 @@
 //====  REQUIRES
 var u       = require('./u');
 var s       = require('./sprints');
+var p       = require('./projects');
 var url     = require('url');
 var express = require('express');
 
@@ -26,18 +27,29 @@ var app = express();
 
 // GET /
 app.get('/', function (req, res) {
-	console.log(fmtDate() + " GET /");
-	res.send('Welcome to Agile Homepage !!  Have a great day');
+	console.log(u.fmtDate() + " GET /");
+	res.send('Welcome to Agile Homepage !! Have a great day');
+})
+
+// GET /p/list
+app.get(/p\/list\/?$/, function(req, res) {
+	// split URL so that one can extract : list
+	var urlParts = url.parse(req.url).pathname.split('/');
+
+	// remove the empty first element, as the URL
+	// starts with a /, first element is empty !!
+	urlParts.shift();
+
+	p.projectsH(req, res, urlParts); // this calls res.send() too
 })
 
 // GET /projectId/sprints/(active|backlog|completed)
-app.get(/^\/[1-9][0-9]*\/sprints\/(active|backlog|completed)/, function(req, res) {
+app.get(/^\/[1-9][0-9]*\/sprints\/(active|backlog|completed)\/?$/, function(req, res) {
 	// split URL so that one can extract : active|backlog|completed
 	var urlParts = url.parse(req.url).pathname.split('/');
 
-	// remove the empty first element,
-	// as the URL starts with a /, first elem
-	// is empty !!
+	// remove the empty first element, as the URL
+	// starts with a /, first element is empty !!
 	urlParts.shift();
 
 	s.sprintsH(req, res, urlParts); // this calls res.send() too
