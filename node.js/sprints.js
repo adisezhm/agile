@@ -18,31 +18,13 @@
 //  'sprints' module exports
 exports.sprintsH = url_sprints;
 
-var u = require('./u');
+var u  = require('./u');
+var db = require('./db');
 
-//==================
-//  SQLite3 database
-//==================
-const sqlite3 = require('sqlite3').verbose();
-
-const dbFile = '../agile.db';
-
-function db_open()
+function sprints(dbC, keyVal, zsList, callerCb)
 {
-	db = new sqlite3.Database(dbFile, sqlite3.OPEN_READWRITE, (err) => {
-		if (err) {
-			return console.error(err.message);
-		}
-		console.log(u.fmtDate() + 'Connected to ' + dbFile + ' SQlite3 database.');
-	});
-
-	return db;
-}
-
-function sprints(db, keyVal, zsList, callerCb)
-{
-	db.serialize(() => {
-		db.each(`SELECT sName, sStatus, sDesc FROM sprint where sStatus = ?`,
+	dbC.serialize(() => {
+		dbC.each(`SELECT sName, sStatus, sDesc FROM sprint where sStatus = ?`,
 				keyVal,
 			function (err, row)
 			{
@@ -55,30 +37,19 @@ function sprints(db, keyVal, zsList, callerCb)
 			function() {
 			    callerCb();
 			}
-		); // db.each()
-	}); // db.serialize
+		); // dbC.each()
+	}); // dbC.serialize
 }
 
-function db_close(db)
-{
-	// close the database connection
-	db.close((err) => {
-		if (err) {
-			return console.error(err.message);
-		}
-		console.log(u.fmtDate() + 'Closed ' + dbFile + ' SQlite3 database.');
-	});
-}
-
-function db_query(keyVal, httpCb)
+function sprints_query(keyVal, httpCb)
 {
 	var sprintsList = new Array();
 
-	db = db_open();
-	sprints(db, keyVal, sprintsList,
+	dbC = db.open();
+	sprints(dbC, keyVal, sprintsList,
 			() => {
 					// below two, ordering is not a must !
-					db_close(db);
+					db.close(dbC);
 					httpCb(sprintsList);
 				}
 			);
@@ -95,7 +66,7 @@ function url_sprints(req, res, sStatusVal)
 
 	console.log('\n' + u.fmtDate() + 'sprints.js processing : ' + urlParts.pathname);
 
-	db_query(sStatusVal,
+	sprints_query(sStatusVal,
 		function(sprintsList)
 		{
 			res.send(sprintsList);
