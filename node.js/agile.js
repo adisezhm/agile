@@ -35,8 +35,9 @@ app.get(/^\/[1-9][0-9]*\/sprints\/(active|backlog|completed)/, function(req, res
 	// split URL so that one can extract : active|backlog|completed
 	var urlParts = url.parse(req.url).pathname.split('/');
 
-	// remove the empty first element
-	// todo : why is the first element empty
+	// remove the empty first element,
+	// as the URL starts with a /, first elem
+	// is empty !!
 	urlParts.shift();
 
 	s.sprintsH(req, res, urlParts); // this calls res.send() too
