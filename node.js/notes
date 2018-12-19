@@ -18,9 +18,9 @@
      node agile.js
    . Access it from the browser
      http://localhost:8000/
-     http://localhost:8000/sprints/active
-     http://localhost:8000/sprints/backlog
-     http://localhost:8000/sprints/completed
+     http://localhost:8000/<projectId>/sprints/active
+     http://localhost:8000/<projectId>/sprints/backlog
+     http://localhost:8000/<projectId>/sprints/completed
 
 5. More code
 

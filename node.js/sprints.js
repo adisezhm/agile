@@ -21,11 +21,11 @@ exports.sprintsH = url_sprints;
 var u  = require('./u');
 var db = require('./db');
 
-function sprints(dbC, keyVal, zsList, callerCb)
+function sprints(dbC, pid, sStatusVal, zsList, callerCb)
 {
 	dbC.serialize(() => {
-		dbC.each(`SELECT sid, sName, sStatus, sDesc FROM sprint where sStatus = ?`,
-				keyVal,
+		dbC.each(`SELECT sid, pid, sName, sStatus, sDesc FROM sprint where pid = ? and sStatus = ?`,
+				pid, sStatusVal,
 			function (err, row)
 			{
 				if (err) {
@@ -41,12 +41,12 @@ function sprints(dbC, keyVal, zsList, callerCb)
 	}); // dbC.serialize
 }
 
-function sprints_query(keyVal, httpCb)
+function sprints_query(pid, sStatusVal, httpCb)
 {
 	var sprintsList = new Array();
 
 	dbC = db.open();
-	sprints(dbC, keyVal, sprintsList,
+	sprints(dbC, pid, sStatusVal, sprintsList,
 			() => {
 					// below two, ordering is not a must !
 					db.close(dbC);
@@ -55,18 +55,19 @@ function sprints_query(keyVal, httpCb)
 			);
 }
 
-//============================
-//  entry point for /sprints/*
-//============================
-const url = require('url');
+//======================================
+//  entry point for /projectId/sprints/(active|backlog|completed)
+//======================================
 
-function url_sprints(req, res, sStatusVal)
+function url_sprints(req, res, urlParts)
 {
-	var urlParts = url.parse(req.url);
+	var pid        = urlParts[0];
+	var modulE     = urlParts[1]; // = 'sprints'
+	var sStatusVal = urlParts[2];
 
-	console.log('\n' + u.fmtDate() + 'sprints.js processing : ' + urlParts.pathname);
+	console.log('\n' + u.fmtDate() + 'sprints.js processing : ' + urlParts);
 
-	sprints_query(sStatusVal,
+	sprints_query(pid, sStatusVal,
 		function(sprintsList)
 		{
 			res.send(sprintsList);

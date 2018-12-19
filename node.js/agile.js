@@ -30,12 +30,16 @@ app.get('/', function (req, res) {
 	res.send('Welcome to Agile Homepage !!  Have a great day');
 })
 
-// GET /sprints/(active|backlog|completed)
-app.get(/^\/sprints\/(active|backlog|completed)/, function(req, res) {
+// GET /projectId/sprints/(active|backlog|completed)
+app.get(/^\/[1-9][0-9]*\/sprints\/(active|backlog|completed)/, function(req, res) {
 	// split URL so that one can extract : active|backlog|completed
-	var urlPathnameParts = url.parse(req.url).pathname.split('/');
+	var urlParts = url.parse(req.url).pathname.split('/');
 
-	s.sprintsH(req, res, urlPathnameParts[2]); // this calls res.send() too
+	// remove the empty first element
+	// todo : why is the first element empty
+	urlParts.shift();
+
+	s.sprintsH(req, res, urlParts); // this calls res.send() too
 })
 
 //====  HTTP SERVER
