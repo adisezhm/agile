@@ -41,20 +41,6 @@ function sprints(dbC, pid, sStatusVal, zsList, callerCb)
 	}); // dbC.serialize
 }
 
-function sprints_query(pid, sStatusVal, httpCb)
-{
-	var sprintsList = new Array();
-
-	dbC = db.open();
-	sprints(dbC, pid, sStatusVal, sprintsList,
-			() => {
-					// below two, ordering is not a must !
-					db.close(dbC);
-					httpCb(sprintsList);
-				}
-			);
-}
-
 //======================================
 //  entry point for /projectId/sprints/(active|backlog|completed)
 //======================================
@@ -67,10 +53,14 @@ function url_sprints(req, res, urlParts)
 
 	console.log('\n' + u.fmtDate() + 'sprints.js processing : ' + urlParts);
 
-	sprints_query(pid, sStatusVal,
-		function(sprintsList)
-		{
-			res.send(sprintsList);
-		}
-	);
+	var sprintsList = new Array();
+
+	dbC = db.open();
+	sprints(dbC, pid, sStatusVal, sprintsList,
+			() => {
+					// no ordering requirement for the below two calls
+					db.close(dbC);
+					res.send(sprintsList);
+				}
+			);
 }
