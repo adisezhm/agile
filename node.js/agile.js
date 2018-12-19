@@ -55,6 +55,13 @@ app.get(/^\/[1-9][0-9]*\/sprints\/(active|backlog|completed)\/?$/, function(req,
 	s.sprintsH(req, res, urlParts); // this calls res.send() too
 })
 
+//  404 Route
+app.get('*', function(req, res){
+	pN = url.parse(req.url).pathname;
+
+	res.send('Error: URL ' + pN + ' not recognized by Agile.', 404);
+});
+
 //====  HTTP SERVER
 var server = app.listen(8000, function () {
 	var h = server.address().address
