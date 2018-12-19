@@ -1,4 +1,4 @@
-//  agile.xp.js - Express based backend (server) for Agile
+//  agile.js - Express/node.js based backend (server) for Agile
 //  Copyright (C) 2018 adisezhm@gmail.com
 //
 //  This program is free software: you can redistribute it and/or modify
@@ -32,6 +32,7 @@ app.get('/', function (req, res) {
 
 // GET /sprints/(active|backlog|completed)
 app.get(/^\/sprints\/(active|backlog|completed)/, function(req, res) {
+	// split URL so that one can extract : active|backlog|completed
 	var urlPathnameParts = url.parse(req.url).pathname.split('/');
 
 	s.sprintsH(req, res, urlPathnameParts[2]); // this calls res.send() too
@@ -39,8 +40,8 @@ app.get(/^\/sprints\/(active|backlog|completed)/, function(req, res) {
 
 //====  HTTP SERVER
 var server = app.listen(8000, function () {
-	var host = server.address().address
-	var port = server.address().port
+	var h = server.address().address
+	var p = server.address().port
 
-	console.log("Agile listening at http://%s:%s", host, port)
+	console.log("Agile listening at http://%s:%s", h, p)
 })
