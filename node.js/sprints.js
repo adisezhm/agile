@@ -25,13 +25,15 @@ var u = require('./u');
 //==================
 const sqlite3 = require('sqlite3').verbose();
 
+const dbFile = '../agile.db';
+
 function db_open()
 {
-	db = new sqlite3.Database('../agile.db', sqlite3.OPEN_READWRITE, (err) => {
+	db = new sqlite3.Database(dbFile, sqlite3.OPEN_READWRITE, (err) => {
 		if (err) {
 			return console.error(err.message);
 		}
-		console.log(u.fmtDate() + 'Connected to the ../agile.db SQlite3 database.');
+		console.log(u.fmtDate() + 'Connected to ' + dbFile + ' SQlite3 database.');
 	});
 
 	return db;
@@ -48,7 +50,7 @@ function sprints(db, keyVal, zsList, callerCb)
 					console.error(err.message);
 				}
 				zsList.push(row);
-				console.log(u.fmtDate() + 'sprints row : ' + JSON.stringify(row));
+				console.log(u.fmtDate() + 'sprints() row : ' + JSON.stringify(row));
 			},
 			function() {
 			    callerCb();
@@ -64,7 +66,7 @@ function db_close(db)
 		if (err) {
 			return console.error(err.message);
 		}
-		console.log(u.fmtDate() + 'Closed the ./agile.db SQlite3 database connection.');
+		console.log(u.fmtDate() + 'Closed ' + dbFile + ' SQlite3 database.');
 	});
 }
 
@@ -91,12 +93,12 @@ function url_sprints(req, res, sStatusVal)
 {
 	var urlParts = url.parse(req.url);
 
-	console.log('\n' + u.fmtDate() + 'agile.xp.js processing : ' + urlParts.pathname);
+	console.log('\n' + u.fmtDate() + 'sprints.js processing : ' + urlParts.pathname);
 
 	db_query(sStatusVal,
 		function(sprintsList)
 		{
-			res.send(JSON.stringify(sprintsList));
+			res.send(sprintsList);
 		}
 	);
 }
