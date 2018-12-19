@@ -24,7 +24,7 @@ var db = require('./db');
 function sprints(dbC, keyVal, zsList, callerCb)
 {
 	dbC.serialize(() => {
-		dbC.each(`SELECT sName, sStatus, sDesc FROM sprint where sStatus = ?`,
+		dbC.each(`SELECT sid, sName, sStatus, sDesc FROM sprint where sStatus = ?`,
 				keyVal,
 			function (err, row)
 			{
