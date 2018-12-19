@@ -38,15 +38,15 @@ echo
 
 #==== iSprint <sid> <did> <pid> <name> <sDesc> <owner> <sStartDate> <sEndDate> <status>
 echo "${smso}iSprint${rmso}"
-agile  iSprint 25001 20 414446  sReqs   sReqs   user4  0 0 active     #  good
-agile  iSprint 25002 20 414446  xyz     xyz     user5  0 0 completed  #  good
+agile  iSprint 25001 20 414446  acSpr12 sReqs   user4  0 0 active     #  good
+agile  iSprint 25002 20 414446  coSpr31 xyz     user5  0 0 completed  #  good
 #agile iSprint 25001 20 414446  sReqs   sReqs   user4  0 0 active     #  error: duplicate sid
 #agile iSprint 25002 20 4144460 sReqs   sReqs   user4  0 0 active     #  error: foreign key not found
-agile  iSprint 25003 20 414446  sDesign sDesign user6  0 0 active     #  good
-agile  iSprint 25004 20 414446  abc     abc     user6  0 0 active     #  good
-agile  iSprint 25005 20 414446  spr8    spr8    user6  0 0 backlog    #  good
-agile  iSprint 25006 20 414446  spr9    spr9    user6  0 0 backlog    #  good
-agile  iSprint 25007 20 414446  10spr   10spr   user6  0 0 completed  #  good
+agile  iSprint 25003 20 414446  acSpr10 sDesign user6  0 0 active     #  good
+agile  iSprint 25004 20 414446  acSpr11 abc     user6  0 0 active     #  good
+agile  iSprint 25005 20 414446  blSpr20 spr8    user6  0 0 backlog    #  good
+agile  iSprint 25006 20 414446  blSpr21 spr9    user6  0 0 backlog    #  good
+agile  iSprint 25007 20 414446  coSpr30 10spr   user6  0 0 completed  #  good
 echo
 
 #==== del <tableName> <rowId>
