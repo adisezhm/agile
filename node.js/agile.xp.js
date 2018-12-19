@@ -23,19 +23,11 @@ app.get('/', function (req, res) {
 	res.send('Welcome to Agile Homepage !!  Have a great day');
 })
 
-// GET /sprints
-app.get('/sprints/active', function(req, res) {
-	url_sprints(req, res, 'active'); // this calls res.send() too
-})
+// GET /sprints/(active|backlog|completed)
+app.get(/^\/sprints\/(active|backlog|completed)/, function(req, res) {
+	var urlPathnameParts = url.parse(req.url).pathname.split('/');
 
-// GET /sprints/completed
-app.get('/sprints/completed', function(req, res) {
-	url_sprints(req, res, 'completed'); // this calls res.send() too
-})
-
-// GET /sprints/backlog
-app.get('/sprints/backlog', function(req, res) {
-	url_sprints(req, res, 'backlog'); // this calls res.send() too
+	url_sprints(req, res, urlPathnameParts[2]); // this calls res.send() too
 })
 
 var server = app.listen(8000, function () {
