@@ -49,7 +49,9 @@ function url_sprints_pid(req, res, urlParts)
 	db.query(dbC, sqlQpName, pRows, () => {
 
 		//  3. get sprints
-		sql = `SELECT pid, \'${pRows[0].pName}\' AS pName, sid, pid, sName, sStatus, sDesc FROM sprint where pid = ${pid} and sStatus = \'${sStatusVal}\'`;
+		sql = `SELECT pid, \'${pRows[0].pName}\' AS pName, sid, sName, sStatus, sDesc ` +
+				`FROM sprint ` +
+				`where pid = ${pid} and sStatus = \'${sStatusVal}\'`;
 
 		db.query(dbC, sql, sRows, () => {
 			url_cb(res, dbC, sRows);
@@ -73,7 +75,9 @@ function url_sprints_pname(req, res, urlParts)
 
 	//  2. get sprint rows
 	sql1 = `(select pid from project where pName = \'${pName}\')`;
-	sql  = `SELECT pid, \'${pName}\' AS pName, sid, pid, sName, sStatus, sDesc FROM sprint where pid = ${sql1} and sStatus = \'${sStatusVal}\'`;
+	sql  = `SELECT pid, \'${pName}\' AS pName, sid, sName, sStatus, sDesc ` +
+			`FROM sprint ` +
+			`where pid = ${sql1} and sStatus = \'${sStatusVal}\'`;
 
 	db.query(dbC, sql, sRows, () => {
 		url_cb(res, dbC, sRows);
