@@ -52,16 +52,22 @@ function db_close(db)
 	});
 }
 
-function db_query(keyVal, httpCb)
+function db_query(dbC, sql, rows, callerCb)
 {
-	var sprintsList = new Array();
-
-	db = db_open();
-	sprints(db, keyVal, sprintsList,
-			() => {
-					// no ordering requirement for the below two calls
-					db_close(db);
-					httpCb(sprintsList);
+	dbC.serialize(() => {
+		dbC.each(sql,
+			function (err, row)
+			{
+				if (err) {
+					console.error(err.message);
 				}
-			);
+				rows.push(row);
+				console.log(u.fmtDate() + 'db_query() row : ' + JSON.stringify(row));
+			},
+			function() {
+				console.log(u.fmtDate() + 'db_query() sql : ' + sql);
+			    callerCb();
+			}
+		); // dbC.each()
+	}); // dbC.serialize
 }

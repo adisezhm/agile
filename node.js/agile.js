@@ -43,6 +43,18 @@ app.get(/p\/list\/?$/, function(req, res) {
 	p.projectsH(req, res, urlParts); // this calls res.send() too
 })
 
+// GET /<projectName>/sprints/(active|backlog|completed)
+app.get(/^\/[a-zA-Z][a-zA-Z1-9]*\/sprints\/(active|backlog|completed)\/?$/, function(req, res) {
+	// split URL so that one can extract : active|backlog|completed
+	var urlParts = url.parse(req.url).pathname.split('/');
+
+	// remove the empty first element, as the URL
+	// starts with a /, first element is empty !!
+	urlParts.shift();
+
+	s.sprintsPNameH(req, res, urlParts); // this calls res.send() too
+})
+
 // GET /projectId/sprints/(active|backlog|completed)
 app.get(/^\/[1-9][0-9]*\/sprints\/(active|backlog|completed)\/?$/, function(req, res) {
 	// split URL so that one can extract : active|backlog|completed
@@ -52,7 +64,7 @@ app.get(/^\/[1-9][0-9]*\/sprints\/(active|backlog|completed)\/?$/, function(req,
 	// starts with a /, first element is empty !!
 	urlParts.shift();
 
-	s.sprintsH(req, res, urlParts); // this calls res.send() too
+	s.sprintsPidH(req, res, urlParts); // this calls res.send() too
 })
 
 //  404 Route

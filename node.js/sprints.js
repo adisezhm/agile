@@ -16,47 +16,53 @@
 //
 
 //  'sprints' module exports
-exports.sprintsH = url_sprints;
+exports.sprintsPidH   = url_sprints_pid;
+exports.sprintsPNameH = url_sprints_pname;
 
 var u  = require('./u');
 var db = require('./db');
 
-function sprints(dbC, pid, sStatusVal, zsList, callerCb)
+//  entry point for /<projectId>/sprints/(active|backlog|completed)
+//
+function url_sprints_pid(req, res, urlParts)
 {
-	dbC.serialize(() => {
-		dbC.each(`SELECT sid, pid, sName, sStatus, sDesc FROM sprint where pid = ? and sStatus = ?`,
-				pid, sStatusVal,
-			function (err, row)
-			{
-				if (err) {
-					console.error(err.message);
-				}
-				zsList.push(row);
-				console.log(u.fmtDate() + 'sprints() row : ' + JSON.stringify(row));
-			},
-			function() {
-			    callerCb();
-			}
-		); // dbC.each()
-	}); // dbC.serialize
-}
-
-//======================================
-//  entry point for /projectId/sprints/(active|backlog|completed)
-//======================================
-
-function url_sprints(req, res, urlParts)
-{
-	var pid        = urlParts[0];
+	var pid        = urlParts[0]; // project Id
 	var modulE     = urlParts[1]; // = 'sprints'
 	var sStatusVal = urlParts[2];
 
-	console.log('\n' + u.fmtDate() + 'sprints.js processing : ' + urlParts);
+	console.log('\n' + u.fmtDate() + 'sprints_pid processing : ' + urlParts);
 
 	var sprintsList = new Array();
 
+	sql = `SELECT sid, pid, sName, sStatus, sDesc FROM sprint where pid = ${pid} and sStatus = \'${sStatusVal}\'`;
+
 	dbC = db.open();
-	sprints(dbC, pid, sStatusVal, sprintsList,
+	db.query(dbC, sql, sprintsList,
+			() => {
+					// no ordering requirement for the below two calls
+					db.close(dbC);
+					res.send(sprintsList);
+				}
+			);
+}
+
+//  entry point for /<projectName>/sprints/(active|backlog|completed)
+//
+function url_sprints_pname(req, res, urlParts)
+{
+	var pName      = urlParts[0]; // project Name
+	var modulE     = urlParts[1]; // = 'sprints'
+	var sStatusVal = urlParts[2];
+
+	console.log('\n' + u.fmtDate() + 'sprints_name processing : ' + urlParts);
+
+	var sprintsList = new Array();
+
+	sql1 = `(select pid from project where pName = \'${pName}\')`;
+	sql  = `SELECT sid, pid, sName, sStatus, sDesc FROM sprint where pid = ${sql1} and sStatus = \'${sStatusVal}\'`;
+
+	dbC = db.open();
+	db.query(dbC, sql, sprintsList,
 			() => {
 					// no ordering requirement for the below two calls
 					db.close(dbC);

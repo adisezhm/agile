@@ -40,6 +40,25 @@ function projectsList(zsList, callerCb)
 	}); // dbC.serialize
 }
 
+function getProjectId(projectName, pid, callerCb)
+{
+	dbC.serialize(() => {
+		dbC.each_sync(`SELECT pid FROM project where pName = ?`,
+			projectName,
+			function (err, row)
+			{
+				if (err) {
+					console.error(err.message);
+				}
+				pid = row.pid;
+			},
+			function() {
+			    callerCb();
+			}
+		); // dbC.each()
+	}); // dbC.serialize
+}
+
 //=========================
 //  entry point for /p/list
 //=========================
