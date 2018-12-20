@@ -33,17 +33,24 @@ function url_sprints_pid(req, res, urlParts)
 	console.log('\n' + u.fmtDate() + 'sprints_pid processing : ' + urlParts);
 
 	var sprintsList = new Array();
+	var pRows       = new Array();
 
-	sql = `SELECT sid, pid, sName, sStatus, sDesc FROM sprint where pid = ${pid} and sStatus = \'${sStatusVal}\'`;
-
+	//  1. open database
 	dbC = db.open();
-	db.query(dbC, sql, sprintsList,
-			() => {
-					// no ordering requirement for the below two calls
-					db.close(dbC);
-					res.send(sprintsList);
-				}
-			);
+
+	//  2. get pName
+	sqlQpName = `select pName from project where pid = ${pid}`;
+	db.query(dbC, sqlQpName, pRows, () =>
+	{
+		//  3. get sprints
+		sql = `SELECT pid, \'${pRows[0].pName}\' AS pName, sid, pid, sName, sStatus, sDesc FROM sprint where pid = ${pid} and sStatus = \'${sStatusVal}\'`;
+		db.query(dbC, sql, sprintsList, () =>
+		{
+			// 4. no ordering requirement for the below two calls
+			db.close(dbC);
+			res.send(sprintsList);
+		});
+	});
 }
 
 //  entry point for /<projectName>/sprints/(active|backlog|completed)
@@ -59,14 +66,13 @@ function url_sprints_pname(req, res, urlParts)
 	var sprintsList = new Array();
 
 	sql1 = `(select pid from project where pName = \'${pName}\')`;
-	sql  = `SELECT sid, pid, sName, sStatus, sDesc FROM sprint where pid = ${sql1} and sStatus = \'${sStatusVal}\'`;
+	sql  = `SELECT pid, \'${pName}\' AS pName, sid, pid, sName, sStatus, sDesc FROM sprint where pid = ${sql1} and sStatus = \'${sStatusVal}\'`;
 
 	dbC = db.open();
-	db.query(dbC, sql, sprintsList,
-			() => {
-					// no ordering requirement for the below two calls
-					db.close(dbC);
-					res.send(sprintsList);
-				}
-			);
+	db.query(dbC, sql, sprintsList, () =>
+	{
+			// no ordering requirement for the below two calls
+			db.close(dbC);
+			res.send(sprintsList);
+	});
 }

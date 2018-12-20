@@ -71,7 +71,7 @@ app.get(/^\/[1-9][0-9]*\/sprints\/(active|backlog|completed)\/?$/, function(req,
 app.get('*', function(req, res){
 	pN = url.parse(req.url).pathname;
 
-	res.send('Error: URL ' + pN + ' not recognized by Agile.', 404);
+	res.status(404).send('Error: URL ' + pN + ' not recognized by Agile.');
 });
 
 //====  HTTP SERVER
