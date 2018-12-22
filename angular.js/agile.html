@@ -1,0 +1,62 @@
+<html>
+   <head>
+      <title>Agile</title>
+      <script src = "angular.min.js"></script>
+      
+      <!-- 1. ng agile style -->
+      <style>
+         table tr:nth-child(odd) {
+            background-color: #f2f2f2;
+            background-color: lightgrey;
+         }
+         table tr:nth-child(even) {
+            background-color: white;
+         }
+         table, th, td {
+            border: 1px solid orange;
+            border-collapse: collapse;
+            padding: 2px;
+         }
+      </style>
+   </head>
+   
+   <body>
+      <!-- 2. ng agileApp ie the view -->
+      <div ng-app = "agileApp" ng-controller = "agileController">
+         
+         <!-- 2a. view title -->
+         <h3>Project {{ project.name }} </h3>
+
+         <table border = "0">
+            <!-- 2b. table title/column-headers -->
+            <tr> <td colspan=3 align=center>SPRINTS</td> </tr>
+            <tr> <th>SID</th>  <th>sName</th> <th>sStatus</th>  </tr>
+
+            <!-- 2c. sprint rows -->
+            <tr ng-repeat = "sprint in project.sprints">
+               <td align=center> {{ sprint.sid     }} </td>
+               <td align=left>   {{ sprint.sName   }} </td>
+               <td align=left contenteditable>   {{ sprint.sStatus }} </td>
+            </tr>
+         </table>
+      </div>
+      
+      <!-- 3. ng agileController -->
+      <script>
+         var agileApp = angular.module("agileApp", []);
+         
+         agileApp.controller('agileController', function($scope) {
+            $scope.project = {
+               name: "k4",
+               sprints:[
+                  {sid:10, sStatus:'active', sName:'A-a123456789012345'},
+                  {sid:20, sStatus:'active', sName:'B'},
+                  {sid:30, sStatus:'active', sName:'C'},
+                  {sid:40, sStatus:'active', sName:'d'},
+               ]
+            };
+         });
+      </script>
+      
+   </body>
+</html>
