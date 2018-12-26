@@ -6,7 +6,7 @@
       <script src = "angular-1.7.5/angular-route.min.js"> </script>
 
       <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-      
+
       <!-- 1. Agile application style -->
       <style>
          table tr:nth-child(odd) {
@@ -22,7 +22,7 @@
          }
       </style>
    </head>
-   
+
    <body>
       <h2>Agile Application</h2>
       <div ng-app = "agileApp">
@@ -46,24 +46,29 @@
                 <tr> <td > {{ p2 }} </td> </tr>
             </table>
          </script>
-         
+
          <!-- oneProject HTML page, can be separate file too -->
          <script type = "text/ng-template" id = "oneProject.htm">
-            <h2> {{project.name}} Project </h2>
+            <h2> One Project </h2>
 
             <table border = "0">
                 <!-- 1a. sprint rows -->
-                <tr> <th>Sprint ID</th>  <th>Sprint Name</th> <th>Sprint Status</th>  </tr>
-                <tr ng-repeat = "sprint in project.sprints">
-                    <td align=center> {{ sprint.sid     }} </td>
-                    <td align=left>   {{ sprint.sName   }} </td>
-                    <td align=left contenteditable>   {{ sprint.sStatus }} </td>
-                 </tr>
+                <tr>
+                    <th>Project ID</th>  <th>Project Name</th>
+                    <th>Sprint ID</th>   <th>Sprint Name</th>   <th>Sprint Status</th>
+                </tr>
+                <tr ng-repeat = "s in sprints">
+                    <td align=center> {{ s.pid     }} </td>
+                    <td align=center> {{ s.pName   }} </td>
+                    <td align=center> {{ s.sid     }} </td>
+                    <td align=left>   {{ s.sName   }} </td>
+                    <td align=left contenteditable>   {{ s.sStatus }} </td>
+                </tr>
              </table>
          </script>
 
       </div>
-      
+
       <script src = "controller/agile.js"> </script>
 
    </body>
