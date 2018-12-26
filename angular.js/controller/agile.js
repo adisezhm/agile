@@ -34,8 +34,8 @@ agileApp.controller('allProjectsController', ['$scope','agileService', function 
 
 agileApp.controller('oneProjectController', ['$scope','agileService', function ($scope, agileService)
 {
-	$scope.getOneProject = function (p) {
-		agileService.getOneProject(p)
+	$scope.getOneProject = function (p, t) {
+		agileService.getOneProject(p, t)
 
 		.then(function success(response){
 			$scope.sprints = response.data;
@@ -47,7 +47,7 @@ agileApp.controller('oneProjectController', ['$scope','agileService', function (
 	}
 
 	// get details of k4 project
-	$scope.getOneProject("k4");
+	$scope.getOneProject("k4", "backlog");
 }]);
 
 agileApp.service('agileService',['$http', function ($http) {
@@ -58,10 +58,10 @@ agileApp.service('agileService',['$http', function ($http) {
 		})
 	}
 
-	this.getOneProject = function getOneProject(p) {
+	this.getOneProject = function getOneProject(p, t) {
 		return $http({
 			method: 'GET',
-			url: 'http://localhost:8000/' + 'k4' + '/sprints/active'
+			url: 'http://localhost:8000/' + p + '/sprints/' + t
 		});
 	}
 }]);
