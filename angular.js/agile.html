@@ -4,6 +4,8 @@
 
       <script src = "angular-1.7.5/angular.min.js"> </script>
       <script src = "angular-1.7.5/angular-route.min.js"> </script>
+
+      <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
       
       <!-- 1. Agile application style -->
       <style>
@@ -41,6 +43,7 @@
                     <td align=left>   {{ p.pName   }} </td>
                     <td align=left contenteditable>   {{ p.pStatus }} </td>
                 </tr>
+                <tr> <td > {{ p2 }} </td> </tr>
             </table>
          </script>
          
@@ -61,43 +64,7 @@
 
       </div>
       
-      <script>
-         var agileApp = angular.module("agileApp", ['ngRoute']);
+      <script src = "controller/agile.js"> </script>
 
-         agileApp.config(['$routeProvider', function($routeProvider) {
-            $routeProvider
-
-            .when('/listAllProjects', {
-               templateUrl: 'allProjects.htm',
-               controller: 'allProjectsController'
-            })
-            .when('/listOneProject', {
-               templateUrl: 'oneProject.htm',
-               controller: 'oneProjectController'
-            })
-         }]);
-
-         agileApp.controller('allProjectsController', function($scope) {
-            $scope.projects = [
-                  {pid:10, pStatus:'active',    pName:'p4-a123456789012345'},
-                  {pid:20, pStatus:'backlog',   pName:'p3'},
-                  {pid:30, pStatus:'backlog',   pName:'p2'},
-                  {pid:40, pStatus:'completed', pName:'p1'},
-               ];
-         });
-
-         agileApp.controller('oneProjectController', function($scope) {
-            $scope.project = {
-               name: "k4",
-               sprints:[
-                  {sid:10, sStatus:'active', sName:'A-a123456789012345'},
-                  {sid:20, sStatus:'active', sName:'B'},
-                  {sid:30, sStatus:'active', sName:'C'},
-                  {sid:40, sStatus:'active', sName:'d'},
-               ]
-            };
-         });
-      </script>
-      
    </body>
 </html>
