@@ -13,10 +13,11 @@
 
    <body>
       <h2>Agile Application</h2>
+
       <div ng-app = "agileApp">
          <li><a href = "#!listAllProjects">All Projects</a></li>
-         <li></li>
-         <li><a href = "#!listOneProject">One Project</a></li>
+         <br/>
+         <li><a href = "#!listOneProject">Get Project</a></li>
          <div ng-view></div>
 
          <!-- allProjects HTML page, can be separate file too -->
@@ -37,7 +38,19 @@
 
          <!-- oneProject HTML page, can be separate file too -->
          <script type = "text/ng-template" id = "oneProject.htm">
-            <h2> One Project </h2>
+            <br/>
+            <!-- Get user inputs -->
+			<table>
+				<tr>
+					<td width="80">pName</td>
+					<td><input type="text" ng-model="pName" /></td>
+					<td width="80">sType</td>
+					<td><input type="text" ng-model="sType" /></td>
+					<td> <button ng-click="getOneProject(pName, sType)"> Get </button> </td>
+				</tr>
+			</table>
+
+			<p>{pName, sType} =  {{pName}}, {{sType}}</p>
 
             <table border = "0">
                 <!-- 1a. sprint rows -->
@@ -57,6 +70,7 @@
 
       </div>
 
+      <!-- agileApp, incl. routing and controllers -->
       <script src = "controller/agile.js"> </script>
 
    </body>
