@@ -19,8 +19,11 @@
 var u       = require('./u');
 var s       = require('./sprints');
 var p       = require('./projects');
+
 var url     = require('url');
 var express = require('express');
+var https   = require('https');
+var fs      = require('fs');
 
 //====  ROUTES
 var app = express();
@@ -74,10 +77,24 @@ app.get('*', function(req, res){
 	res.status(404).send('Error: URL ' + pN + ' not recognized by Agile.');
 });
 
-//====  HTTP SERVER
-var server = app.listen(8000, function () {
+//====  HTTPs SERVER
+var server = https.createServer({
+						key: fs.readFileSync('../cert/agile.key'),
+						cert: fs.readFileSync('../cert/agile.pem')
+						}, app)
+
+// Note :
+// Begin accepting connections on the specified port and hostname.
+// If the hostname is omitted, the server will accept connections
+// on any IPv6 address (::) when IPv6 is available, or any IPv4
+// address (0.0.0.0) otherwise. A port value of zero will assign
+// a random port.
+//
+// Passing "localhost", to avoid getting back :: for 'address
+
+server.listen(8000, "localhost", function () {
 	var h = server.address().address
 	var p = server.address().port
 
-	console.log("Agile listening at http://%s:%s", h, p)
+	console.log('Agile listening at https://%s:%d/', h, p)
 })
