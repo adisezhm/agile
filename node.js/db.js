@@ -15,10 +15,6 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 
-//  'db' module exports
-exports.open  = db_open;
-exports.close = db_close;
-exports.query = db_query;
 
 var u = require('./u');
 
@@ -27,47 +23,76 @@ var u = require('./u');
 //==================
 const sqlite3 = require('sqlite3').verbose();
 
-const dbFile = '../agile.db';
+var dbLogBits = 0;
+const LOG_OPEN  = 1;
+const LOG_CLOSE = 2;
+const LOG_QUERY_STMT = 4;
+const LOG_QUERY_ROW = 8;
 
-function db_open()
+function db_setlog(logBits)
 {
-	db = new sqlite3.Database(dbFile, sqlite3.OPEN_READWRITE, (err) => {
-		if (err) {
-			return console.error(err.message);
-		}
-		console.log(u.fmtDate() + 'Connected to ' + dbFile + ' SQlite3 database.');
-	});
-
-	return db;
+	dbLogBits = logBits;
 }
 
-function db_close(db)
+function db_open(dbFile)
+{
+	dbC = new sqlite3.Database(dbFile, sqlite3.OPEN_READWRITE, 
+		(err) => {
+			if (err) {
+				return console.error(err.message);
+			}
+			if( dbLogBits & LOG_OPEN ) {
+				console.log(u.fmtDate() + 'db_open()  : ' + dbFile + ' SQLite3 database.');
+			}
+		}
+	);
+
+	return dbC;
+}
+
+function db_close(dbC, dbFile)
 {
 	// close the database connection
-	db.close((err) => {
+	dbC.close((err) => {
 		if (err) {
 			return console.error(err.message);
 		}
-		console.log(u.fmtDate() + 'Closed ' + dbFile + ' SQlite3 database.');
+		if( dbLogBits & LOG_CLOSE ) {
+			console.log(u.fmtDate() + 'db_close() : ' + dbFile + ' SQlite3 database.');
+		}
 	});
 }
 
-function db_query(dbC, sql, rows, callerCb)
+function db_query(dbC, sqlStmt, rows, callerCb)
 {
+	if( dbLogBits & LOG_QUERY_STMT ) {
+		console.log(u.fmtDate() + 'db_query() : ' + sqlStmt);
+	}
 	dbC.serialize(() => {
-		dbC.each(sql,
+		dbC.each(sqlStmt,
 			function (err, row)
 			{
 				if (err) {
-					console.error(err.message);
+					console.log(u.fmtDate() + 'db_query() : Error: ' + err.message);
 				}
 				rows.push(row);
-				console.log(u.fmtDate() + 'db_query() row : ' + JSON.stringify(row));
+				if( dbLogBits & LOG_QUERY_ROW ) {
+					console.log(u.fmtDate() + 'db_query() : ' + JSON.stringify(row));
+				}
 			},
 			function() {
-				console.log(u.fmtDate() + 'db_query() sql : ' + sql);
 			    callerCb();
 			}
 		); // dbC.each()
 	}); // dbC.serialize
 }
+
+//  'db' module exports
+exports.setlog         = db_setlog;
+exports.open           = db_open;
+exports.close          = db_close;
+exports.query          = db_query;
+exports.LOG_OPEN       = LOG_OPEN;
+exports.LOG_CLOSE      = LOG_CLOSE;
+exports.LOG_QUERY_STMT = LOG_QUERY_STMT;
+exports.LOG_QUERY_ROW  = LOG_QUERY_ROW;
