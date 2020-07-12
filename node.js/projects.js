@@ -72,7 +72,7 @@ function url_projects(req, res, urlParts)
 
 	var projectsArray = new Array();
 
-	dbC = db.open();
+	dbC = db.open('../agile.db');
 	if( cmd == "list" ) {
 		projectsList(projectsArray,
 			() => {

@@ -1,0 +1,58 @@
+#  agile.curl
+#  Example to show the usage of Agile via REST APIs
+#
+#  Copyright (C) 2020 adisezhm@gmail.com
+#
+#  @notes
+#  1. eg agile.curl invocation
+#     agile.curl post /p/list
+#     agile.curl post /k4/sprints\(active|backlog|completed)
+#     agile.curl post /414446/sprints\(active|backlog|completed)
+#
+#  2. eg curl invocation
+#     curl -v -H "Content-Type: application/json" -X POST
+#             -d '{"name":"your name", "phonenumber":"111-111"}'
+#             http://www.abc.com/details
+#
+
+protocol=https
+ip=127.0.0.1
+port=8000
+
+tokenGood=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImkiOjQ0NiwidSI6InNocmVlIiwicCI6InNocmVlIn0sImlhdCI6MTU5MjM5OTgzMywiZXhwIjoxNTkyNDg2MjMzfQ.zIN3j6FH_38abNto1NpaT655Al-nFs3kf_oKflGD4znyp08y7s-uxLSgT5_2EFOeSKo9eSIog49mbYT7mbEYsw
+token=${tokenGood}
+
+get()
+{
+	curl  -include -k -H "Content-Type: application/json"   \
+			-d '{ "cred": {"u":"sample", "p":"sample-password", "dn":"sampleDN"} }' \
+			-H "Authorization: Bearer ${token}"   \
+			-X GET \
+			${protocol}://${ip}:${port}"$@"
+	r=$?
+
+	return $r
+}
+
+post()
+{
+	curl  -include -k -H "Content-Type: application/json"   \
+			-d '{ "cred": {"u":"sample", "p":"sample-password", "dn":"sampleDN"} }' \
+			-H "Authorization: Bearer ${token}"   \
+			-X POST \
+			${protocol}://${ip}:${port}"$@"
+	r=$?
+
+	return $r
+}
+
+if [[ $# -lt 1 ]]
+then
+	echo "Usage: $(basename $0) post </p/list | /pid/s/list>" >&2
+	exit 1
+fi
+
+cmd=$1
+shift
+
+$cmd "$@"

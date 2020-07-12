@@ -42,7 +42,7 @@ function url_sprints_pid(req, res, urlParts)
 	console.log('\n' + u.fmtDate() + 'sprints_pid processing : ' + urlParts);
 
 	//  1. open database
-	dbC = db.open();
+	dbC = db.open('../agile.db');
 
 	//  2. get pName
 	sqlQpName = `select pName from project where pid = ${pid}`;
@@ -71,7 +71,7 @@ function url_sprints_pname(req, res, urlParts)
 	console.log('\n' + u.fmtDate() + 'sprints_name processing : ' + urlParts);
 
 	// 1. open database
-	dbC = db.open();
+	dbC = db.open('../agile.db');
 
 	//  2. get sprint rows
 	sql1 = `(select pid from project where pName = \'${pName}\')`;
