@@ -14,6 +14,11 @@
 #             -d '{"name":"your name", "phonenumber":"111-111"}'
 #             http://www.abc.com/details
 #
+#  3. jq usage
+#     . print keys
+#         jq '.[0] | keys'
+#     . convert to a table
+#         jq -r '.[] | "\(.pid)\t\(.pName)"'
 
 protocol=https
 ip=127.0.0.1
@@ -22,26 +27,53 @@ port=8000
 tokenGood=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImkiOjQ0NiwidSI6InNocmVlIiwicCI6InNocmVlIn0sImlhdCI6MTU5MjM5OTgzMywiZXhwIjoxNTkyNDg2MjMzfQ.zIN3j6FH_38abNto1NpaT655Al-nFs3kf_oKflGD4znyp08y7s-uxLSgT5_2EFOeSKo9eSIog49mbYT7mbEYsw
 token=${tokenGood}
 
+getJqCommand()
+{
+	local jsonFile=$1
+	local jqCmd=$2
+
+	keys=$(cat $jsonFile | jq  '.[0] | keys' 	\
+			| grep -v -e '^\[$' -e '^\]$'       \
+			| sed -e '1,$s/[", ]//g')
+
+	for k in ${keys}
+	do
+		s=${s}"\(.$k)\t"
+	done
+	echo jq -r \'.[] \| "\"${s}\""\' > ${jqCmd}
+	chmod +x ${jqCmd}
+
+	return 0
+}
+
 get()
 {
-	curl  -include -k -H "Content-Type: application/json"   \
+	curl  --silent -include -k -H "Content-Type: application/json"   \
 			-d '{ "cred": {"u":"sample", "p":"sample-password", "dn":"sampleDN"} }' \
 			-H "Authorization: Bearer ${token}"   \
 			-X GET \
 			${protocol}://${ip}:${port}"$@"
 	r=$?
+	echo
 
 	return $r
 }
 
 post()
 {
-	curl  -include -k -H "Content-Type: application/json"   \
+	jsonOutput=/tmp/json.output
+	jqCmd=/tmp/jq.cmd
+
+	curl  --silent -include -k -H "Content-Type: application/json"   \
 			-d '{ "cred": {"u":"sample", "p":"sample-password", "dn":"sampleDN"} }' \
 			-H "Authorization: Bearer ${token}"   \
 			-X POST \
-			${protocol}://${ip}:${port}"$@"
+			${protocol}://${ip}:${port}"$@"  \
+			| grep '^\['  > ${jsonOutput}
 	r=$?
+
+	getJqCommand ${jsonOutput} ${jqCmd}
+	cat ${jsonOutput} | ${jqCmd}
 
 	return $r
 }
