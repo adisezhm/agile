@@ -27,6 +27,8 @@ port=8000
 tokenGood=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImkiOjQ0NiwidSI6InNocmVlIiwicCI6InNocmVlIn0sImlhdCI6MTU5MjM5OTgzMywiZXhwIjoxNTkyNDg2MjMzfQ.zIN3j6FH_38abNto1NpaT655Al-nFs3kf_oKflGD4znyp08y7s-uxLSgT5_2EFOeSKo9eSIog49mbYT7mbEYsw
 token=${tokenGood}
 
+jqHdr=""
+
 getJqCommand()
 {
 	local jsonFile=$1
@@ -39,9 +41,15 @@ getJqCommand()
 	for k in ${keys}
 	do
 		s=${s}"\(.$k)\t"
+		jqHdr=${jqHdr}"$k\t"
 	done
+
 	echo jq -r \'.[] \| "\"${s}\""\' > ${jqCmd}
 	chmod +x ${jqCmd}
+
+	tput smso
+	echo -e "${jqHdr}" 
+	tput rmso
 
 	return 0
 }
