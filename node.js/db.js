@@ -16,7 +16,7 @@
 //
 
 
-var u = require('./u');
+var u = require('./util');
 
 //==================
 //  SQLite3 database

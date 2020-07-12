@@ -19,7 +19,7 @@
 exports.sprintsPidH   = url_sprints_pid;
 exports.sprintsPNameH = url_sprints_pname;
 
-var u  = require('./u');
+var u  = require('./util');
 var db = require('./db');
 
 function url_cb(res, dbC, rows)
@@ -49,11 +49,11 @@ function url_sprints_pid(req, res, urlParts)
 	db.query(dbC, sqlQpName, pRows, () => {
 
 		//  3. get sprints
-		sql = `SELECT pid, \'${pRows[0].pName}\' AS pName, sid, sName, sStatus, sDesc ` +
+		sprintsSql = `SELECT pid, \'${pRows[0].pName}\' AS pName, sid, sName, sStatus, sDesc, sStart, sEnd ` +
 				`FROM sprint ` +
 				`where pid = ${pid} and sStatus = \'${sStatusVal}\'`;
 
-		db.query(dbC, sql, sRows, () => {
+		db.query(dbC, sprintsSql, sRows, () => {
 			url_cb(res, dbC, sRows);
 		});
 	});
@@ -75,11 +75,11 @@ function url_sprints_pname(req, res, urlParts)
 
 	//  2. get sprint rows
 	sql1 = `(select pid from project where pName = \'${pName}\')`;
-	sql  = `SELECT pid, \'${pName}\' AS pName, sid, sName, sStatus, sDesc ` +
+	sprintsSql  = `SELECT pid, \'${pName}\' AS pName, sid, sName, sStatus, sDesc, sStart, sEnd ` +
 			`FROM sprint ` +
 			`where pid = ${sql1} and sStatus = \'${sStatusVal}\'`;
 
-	db.query(dbC, sql, sRows, () => {
+	db.query(dbC, sprintsSql, sRows, () => {
 		url_cb(res, dbC, sRows);
 	});
 }

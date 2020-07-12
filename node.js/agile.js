@@ -16,7 +16,7 @@
 //
 
 //====  REQUIRES
-var u       = require('./u');
+var u       = require('./util');
 var s       = require('./sprints');
 var p       = require('./projects');
 

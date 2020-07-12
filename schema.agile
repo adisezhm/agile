@@ -17,6 +17,13 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
+#
+#  @notes
+#  1. did    domain id
+#  2. pid    project id
+#  3. sid    sprint id
+#  4. wiid   workitem id
+#
 
 initSchemaSqlCmds()
 {
