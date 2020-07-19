@@ -16,7 +16,7 @@
 //
 
 //  'projects' module exports
-exports.projectsH = url_projects;
+exports.list = projects_list;
 
 var u  = require('./util');
 var db = require('./db');
@@ -63,7 +63,7 @@ function getProjectId(projectName, pid, callerCb)
 //  entry point for /p/list
 //=========================
 
-function url_projects(req, res, urlParts)
+function projects_list(req, res, urlParts)
 {
 	var modulE  = urlParts[0]; // = 'p'
 	var cmd     = urlParts[1]; // eg list
@@ -82,4 +82,31 @@ function url_projects(req, res, urlParts)
 				}
 			);
 	}
+}
+
+//=========================
+//  entry point for /projects/add
+//=========================
+
+// insert into ${pTbl} (did, pid, pName, pDesc, pAssignee, pStart, pEnd, pStatus) values (${did}, ${pid}, '${pName}', '${pDesc}', '${pAssignee}', '${pStart}', '${pEnd}', '${pStatus}')"
+//
+//
+// insert into project (did, pid, pName, pDesc, pAssignee, pStart, pEnd, pStatus) values (${did}, ${pid}, '${pName}', '${pDesc}', '${pAssignee}', '${pStart}', '${pEnd}', '${pStatus}')"
+
+function projects_add(req, res, urlParts)
+{
+	var modulE  = urlParts[0]; // = 'projects'
+	var cmd     = urlParts[1]; // = 'add'
+
+	console.log('\n' + u.fmtDate() + 'projects.js processing : ' + modulE + '/' + cmd);
+
+	dbC = db.open('../agile.db');
+
+	projectsAdd(projectsArray,
+			() => {
+				// no ordering requirement for the below two calls
+				db.close(dbC);
+				res.send(projectsArray);
+			}
+		);
 }

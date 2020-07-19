@@ -16,9 +16,9 @@
 //
 
 //====  REQUIRES
-var u       = require('./util');
-var s       = require('./sprints');
-var p       = require('./projects');
+var u         = require('./util');
+var s         = require('./sprints');
+var projects  = require('./projects');
 
 var url     = require('url');
 var express = require('express');
@@ -43,7 +43,21 @@ app.post(/p\/list\/?$/, function(req, res) {
 	// starts with a /, first element is empty !!
 	urlParts.shift();
 
-	p.projectsH(req, res, urlParts); // this calls res.send() too
+	projects.list(req, res, urlParts); // this calls res.send() too
+})
+
+// POST /projects/add[/]
+app.post(/projects\/add\/?$/, function(req, res) {
+	// split URL so that one can extract : list
+	var urlParts = url.parse(req.url).pathname.split('/');
+
+	// remove the empty first element, as the URL
+	// starts with a /, first element is empty !!
+	urlParts.shift();
+
+	console.log('agile::projects-add ' + urlParts);
+
+	projects.add(req, res, urlParts); // this calls res.send() too
 })
 
 // POST /<projectName>/sprints/(active|backlog|completed)
@@ -52,11 +66,11 @@ app.post(/^\/[a-zA-Z][a-zA-Z1-9]*\/sprints\/(active|backlog|completed)\/?$/, fun
 	// split URL so that one can extract : active|backlog|completed
 	var urlParts = url.parse(req.url).pathname.split('/');
 
-	console.log('agile::name-sprints ' + urlParts);
-
 	// remove the empty first element, as the URL
 	// starts with a /, first element is empty !!
 	urlParts.shift();
+
+	console.log('agile::name-sprints ' + urlParts);
 
 	s.sprintsPNameH(req, res, urlParts); // this calls res.send() too
 })

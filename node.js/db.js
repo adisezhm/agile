@@ -28,6 +28,7 @@ const LOG_OPEN  = 1;
 const LOG_CLOSE = 2;
 const LOG_QUERY_STMT = 4;
 const LOG_QUERY_ROW = 8;
+const LOG_EXEC_STMT = 16;
 
 function db_setlog(logBits)
 {
@@ -87,12 +88,39 @@ function db_query(dbC, sqlStmt, rows, callerCb)
 	}); // dbC.serialize
 }
 
+function db_run(dbC, sqlStmt, params, callerCb)
+{
+	// @todo delete below line
+	// db.run('INSERT INTO users(name, age) VALUES(?, ?)', ['Raiko',29], (err) => {
+
+	if( dbLogBits & LOG_EXEC_STMT ) {
+		console.log(u.fmtDate() + 'db_exec() : ' + sqlStmt + " params=[" + params + "]");
+	}
+
+	dbC.run(sqlStmt, params,
+		function (err) {
+			if (err) {
+				// console.log(u.fmtDate() + 'db_run() : Error: ' + err.message);
+				// console.log('Row insertion encountered error !!');
+		    	callerCb(err);
+			} else {
+				// console.log('A row has been inserted with rowid ${this.lastID} err=' + err);
+		    	callerCb("");
+			}
+		}
+		); // dbC.run
+}
+
+
 //  'db' module exports
-exports.setlog         = db_setlog;
 exports.open           = db_open;
 exports.close          = db_close;
+exports.exec           = db_run;
 exports.query          = db_query;
+
+exports.setlog         = db_setlog;
 exports.LOG_OPEN       = LOG_OPEN;
 exports.LOG_CLOSE      = LOG_CLOSE;
 exports.LOG_QUERY_STMT = LOG_QUERY_STMT;
 exports.LOG_QUERY_ROW  = LOG_QUERY_ROW;
+exports.LOG_EXEC_STMT  = LOG_EXEC_STMT;
