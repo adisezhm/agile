@@ -160,8 +160,8 @@ function db_runoc(dbFile, sqlStmt, sqlParams, runocCallerCb)
 					r["rc"] = 1;
 					r["msg"] = err.message;
 					console.log(myutil.fmtDate()
-						+ 'Error: user_add() of '
-						+ sqlParams + '. '
+						+ 'Error: db_runoc() of '
+						+ sqlStmt + ' ' + sqlParams + '. '
 						+ r.msg + " (rc=" + r.rc + ")");
 				}
 
