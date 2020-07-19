@@ -16,7 +16,7 @@
 //
 
 //====  REQUIRES
-var u         = require('./myutil');
+var myutil    = require('./myutil');
 var s         = require('./sprints');
 var projects  = require('./projects');
 
@@ -30,7 +30,7 @@ var app = express();
 
 // GET /
 app.get('/', function (req, res) {
-	console.log(u.fmtDate() + " GET /");
+	console.log(myutil.fmtDate() + " GET /");
 	res.send('Welcome to Agile Homepage !! Have a great day\n');
 })
 

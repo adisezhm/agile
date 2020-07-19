@@ -18,7 +18,7 @@
 //  'projects' module exports
 exports.list = projects_list;
 
-var u  = require('./myutil');
+var myutil  = require('./myutil');
 var db = require('./db');
 
 function projectsList(zsList, callerCb)
@@ -31,7 +31,7 @@ function projectsList(zsList, callerCb)
 					console.error(err.message);
 				}
 				zsList.push(row);
-				console.log(u.fmtDate() + 'projectsList() row : ' + JSON.stringify(row));
+				console.log(myutil.fmtDate() + 'projectsList() row : ' + JSON.stringify(row));
 			},
 			function() {
 			    callerCb();
@@ -68,7 +68,7 @@ function projects_list(req, res, urlParts)
 	var modulE  = urlParts[0]; // = 'p'
 	var cmd     = urlParts[1]; // eg list
 
-	console.log('\n' + u.fmtDate() + 'projects.js processing : ' + urlParts);
+	console.log('\n' + myutil.fmtDate() + 'projects.js processing : ' + urlParts);
 
 	var projectsArray = new Array();
 
@@ -98,7 +98,7 @@ function projects_add(req, res, urlParts)
 	var modulE  = urlParts[0]; // = 'projects'
 	var cmd     = urlParts[1]; // = 'add'
 
-	console.log('\n' + u.fmtDate() + 'projects.js processing : ' + modulE + '/' + cmd);
+	console.log('\n' + myutil.fmtDate() + 'projects.js processing : ' + modulE + '/' + cmd);
 
 	dbC = db.open('../agile.db');
 

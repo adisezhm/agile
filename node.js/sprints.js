@@ -19,7 +19,7 @@
 exports.sprintsPidH   = url_sprints_pid;
 exports.sprintsPNameH = url_sprints_pname;
 
-var u  = require('./myutil');
+var myutil  = require('./myutil');
 var db = require('./db');
 
 function url_cb(res, dbC, rows)
@@ -39,7 +39,7 @@ function url_sprints_pid(req, res, urlParts)
 	var sRows      = new Array();
 	var pRows      = new Array();
 
-	console.log('\n' + u.fmtDate() + 'sprints_pid processing : ' + urlParts);
+	console.log('\n' + myutil.fmtDate() + 'sprints_pid processing : ' + urlParts);
 
 	//  1. open database
 	dbC = db.open('../agile.db');
@@ -68,7 +68,7 @@ function url_sprints_pname(req, res, urlParts)
 	var sStatusVal = urlParts[2];
 	var sRows      = new Array();
 
-	console.log('\n' + u.fmtDate() + 'sprints_name processing : ' + urlParts);
+	console.log('\n' + myutil.fmtDate() + 'sprints_name processing : ' + urlParts);
 
 	// 1. open database
 	dbC = db.open('../agile.db');
