@@ -35,8 +35,10 @@ function db_setlog(logBits)
 	dbLogBits = logBits;
 }
 
-function db_open(dbFile)
+function db_open(dbFile, logBits)
 {
+	db_setlog(logBits);
+
 	dbC = new sqlite3.Database(dbFile, sqlite3.OPEN_READWRITE, 
 		(err) => {
 			if (err) {
