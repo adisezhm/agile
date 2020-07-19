@@ -19,7 +19,7 @@
 exports.sprintsPidH   = url_sprints_pid;
 exports.sprintsPNameH = url_sprints_pname;
 
-var u  = require('./util');
+var u  = require('./myutil');
 var db = require('./db');
 
 function url_cb(res, dbC, rows)

@@ -16,7 +16,11 @@
 //
 
 
-var u = require('./util');
+// requires, from this project
+const myutil = require('./myutil');
+
+// requires, from this node.js
+const u = require('util');
 
 //==================
 //  SQLite3 database
@@ -45,7 +49,7 @@ function db_open(dbFile, logBits)
 				return console.error(err.message);
 			}
 			if( dbLogBits & LOG_OPEN ) {
-				console.log(u.fmtDate() + 'db_open()  : ' + dbFile + ' SQLite3 database.');
+				console.log(myutil.fmtDate() + 'db_open()  : ' + dbFile + ' SQLite3 database.');
 			}
 		}
 	);
@@ -61,7 +65,7 @@ function db_close(dbC, dbFile)
 			return console.error(err.message);
 		}
 		if( dbLogBits & LOG_CLOSE ) {
-			console.log(u.fmtDate() + 'db_close() : ' + dbFile + ' SQlite3 database.');
+			console.log(myutil.fmtDate() + 'db_close() : ' + dbFile + ' SQlite3 database.');
 		}
 	});
 }
@@ -69,18 +73,18 @@ function db_close(dbC, dbFile)
 function db_query(dbC, sqlStmt, rows, callerCb)
 {
 	if( dbLogBits & LOG_QUERY_STMT ) {
-		console.log(u.fmtDate() + 'db_query() : ' + sqlStmt);
+		console.log(myutil.fmtDate() + 'db_query() : ' + sqlStmt);
 	}
 	dbC.serialize(() => {
 		dbC.each(sqlStmt,
 			function (err, row)
 			{
 				if (err) {
-					console.log(u.fmtDate() + 'db_query() : Error: ' + err.message);
+					console.log(myutil.fmtDate() + 'db_query() : Error: ' + err.message);
 				}
 				rows.push(row);
 				if( dbLogBits & LOG_QUERY_ROW ) {
-					console.log(u.fmtDate() + 'db_query() : ' + JSON.stringify(row));
+					console.log(myutil.fmtDate() + 'db_query() : ' + JSON.stringify(row));
 				}
 			},
 			function() {
@@ -90,27 +94,52 @@ function db_query(dbC, sqlStmt, rows, callerCb)
 	}); // dbC.serialize
 }
 
-function db_run(dbC, sqlStmt, params, callerCb)
+function db_run(dbC, sqlStmt, params, runCallerCb)
 {
 	// @todo delete below line
 	// db.run('INSERT INTO users(name, age) VALUES(?, ?)', ['Raiko',29], (err) => {
 
 	if( dbLogBits & LOG_EXEC_STMT ) {
-		console.log(u.fmtDate() + 'db_exec() : ' + sqlStmt + " params=[" + params + "]");
+		console.log(myutil.fmtDate() + 'db_exec() : ' + sqlStmt + " params=[" + params + "]");
 	}
 
 	dbC.run(sqlStmt, params,
 		function (err) {
 			if (err) {
-				// console.log(u.fmtDate() + 'db_run() : Error: ' + err.message);
-				// console.log('Row insertion encountered error !!');
-		    	callerCb(err);
+				runCallerCb(err);
 			} else {
-				// console.log('A row has been inserted with rowid ${this.lastID} err=' + err);
-		    	callerCb("");
+				runCallerCb("");
 			}
 		}
 		); // dbC.run
+}
+
+
+function db_runoc(dbFile, sqlStmt, sqlParams, runocCallerCb)
+{
+	console.log(myutil.fmtDate() + 'user.js processing : ' + sqlStmt + " " + sqlParams);
+
+	dbC = db_open(dbFile, LOG_OPEN | LOG_EXEC_STMT);
+	db_run(dbC, sqlStmt, sqlParams,
+			(err) => {
+				var r = { "rc" : 0, "msg" : "" };
+
+				// no ordering requirement for the below close and send
+				db_close(dbC, dbFile);
+
+				if( err ) {
+					r["rc"] = 1;
+					r["msg"] = err.message;
+					console.log(myutil.fmtDate()
+						+ 'Error: user_add() of '
+						+ sqlParams + '. '
+						+ r.msg + " (rc=" + r.rc + ")");
+				}
+
+				// call back
+				runocCallerCb(r);
+			} // end (err) lambda
+	); // end db.run()
 }
 
 
@@ -118,6 +147,7 @@ function db_run(dbC, sqlStmt, params, callerCb)
 exports.open           = db_open;
 exports.close          = db_close;
 exports.exec           = db_run;
+exports.execoc         = db_runoc;
 exports.query          = db_query;
 
 exports.setlog         = db_setlog;

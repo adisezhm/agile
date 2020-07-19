@@ -18,7 +18,7 @@
 //  'projects' module exports
 exports.list = projects_list;
 
-var u  = require('./util');
+var u  = require('./myutil');
 var db = require('./db');
 
 function projectsList(zsList, callerCb)
