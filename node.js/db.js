@@ -77,8 +77,7 @@ function db_query(dbC, sqlStmt, rows, callerCb)
 	}
 	dbC.serialize(() => {
 		dbC.each(sqlStmt,
-			function (err, row)
-			{
+			function (err, row) {
 				if (err) {
 					console.log(myutil.fmtDate() + 'db_query() : Error: ' + err.message);
 				}
@@ -92,6 +91,36 @@ function db_query(dbC, sqlStmt, rows, callerCb)
 			}
 		); // dbC.each()
 	}); // dbC.serialize
+}
+
+function db_queryoc(dbFile, sqlStmt, queryOcCallerCb)
+{
+	console.log(myutil.fmtDate() + 'db_queryoc() : ' + sqlStmt);
+
+	var opRows = new Array();
+
+	dbC = db_open(dbFile, LOG_OPEN | LOG_QUERY_STMT | LOG_QUERY_ROW);
+	db_query(dbC, sqlStmt, opRows,
+		() => {
+			var err = 0;
+			var r = { "rc" : 0, "msg" : "" };
+
+			// no ordering requirement for the below close and send
+			db_close(dbC, dbFile);
+
+			if( err ) {
+				r["rc"] = 1;
+				r["msg"] = err.message;
+				console.log(myutil.fmtDate()
+					+ 'Error: db_queryoc() of '
+					+ sqlStmt + '. '
+					+ r.msg + " (rc=" + r.rc + ")");
+			}
+
+			// call back
+			queryOcCallerCb(r, opRows);
+		}
+	);
 }
 
 function db_run(dbC, sqlStmt, params, runCallerCb)
@@ -117,7 +146,7 @@ function db_run(dbC, sqlStmt, params, runCallerCb)
 
 function db_runoc(dbFile, sqlStmt, sqlParams, runocCallerCb)
 {
-	console.log(myutil.fmtDate() + 'user.js processing : ' + sqlStmt + " " + sqlParams);
+	console.log(myutil.fmtDate() + 'db_runoc() : ' + sqlStmt + " " + sqlParams);
 
 	dbC = db_open(dbFile, LOG_OPEN | LOG_EXEC_STMT);
 	db_run(dbC, sqlStmt, sqlParams,
@@ -149,6 +178,7 @@ exports.close          = db_close;
 exports.exec           = db_run;
 exports.execoc         = db_runoc;
 exports.query          = db_query;
+exports.queryoc        = db_queryoc;
 
 exports.setlog         = db_setlog;
 exports.LOG_OPEN       = LOG_OPEN;
