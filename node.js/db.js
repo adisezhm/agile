@@ -111,25 +111,12 @@ function db_queryoc(dbFile, sqlStmt, queryOcCallerCb)
 			queryOcCallerCb(openR.r, opRows);
 		} else {
 
-		db_query(openR.dbC, sqlStmt, opRows,
-		() => {
-			var err = 0;
-			var r = { "rc" : 0, "msg" : "" };
-
+		db_query(openR.dbC, sqlStmt, opRows, () => {
 			// no ordering requirement for the below close and send
 			db_close(openR.dbC, dbFile);
 
-			if( err ) {
-				r["rc"] = 1;
-				r["msg"] = err.message;
-				console.log(myutil.fmtDate()
-					+ 'Error: db_queryoc() of '
-					+ sqlStmt + '. '
-					+ r.msg + " (rc=" + r.rc + ")");
-			}
-
 			// call back
-			queryOcCallerCb(r, opRows);
+			queryOcCallerCb(openR.r, opRows);
 		}); // end db-query lambda, db_query()
 		}
 	}); // end db_open lambda, db_open()
