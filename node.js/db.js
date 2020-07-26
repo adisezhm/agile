@@ -20,7 +20,7 @@
 const myutil = require('./myutil');
 
 // requires, from this node.js
-const u = require('util');
+const util = require('util');
 
 //==================
 //  SQLite3 database
@@ -39,25 +39,31 @@ function db_setlog(logBits)
 	dbLogBits = logBits;
 }
 
-function db_open(dbFile, logBits)
+function db_open(dbFile, logBits, openCb)
 {
+	var dbcR = { "dbC" : null,
+			  "r" : { "rc" : 0, "msg" : "" }
+			};
+
 	db_setlog(logBits);
 
-	dbC = new sqlite3.Database(dbFile, sqlite3.OPEN_READWRITE, 
+	dbcR.dbC = new sqlite3.Database(dbFile, sqlite3.OPEN_READWRITE, 
 		(err) => {
 			if (err) {
 				console.log(myutil.fmtDate() + 'db_open() failed. DB='
 							+ dbFile
-							+ err.message);
-				return console.error(err.message);
+							+ " err=" + err.message);
+				dbcR.dbC   = null;
+				dbcR.r.rc  = 1;
+				dbcR.r.msg = err.message;
+			} else {
+				if( dbLogBits & LOG_OPEN ) {
+					console.log(myutil.fmtDate() + 'db_open()  : ' + dbFile + ' SQLite3 database.');
+				}
 			}
-			if( dbLogBits & LOG_OPEN ) {
-				console.log(myutil.fmtDate() + 'db_open()  : ' + dbFile + ' SQLite3 database.');
-			}
+			openCb(dbcR);
 		}
 	);
-
-	return dbC;
 }
 
 function db_close(dbC, dbFile)
@@ -100,14 +106,18 @@ function db_queryoc(dbFile, sqlStmt, queryOcCallerCb)
 {
 	var opRows = new Array();
 
-	dbC = db_open(dbFile, LOG_OPEN | LOG_QUERY_STMT | LOG_QUERY_ROW);
-	db_query(dbC, sqlStmt, opRows,
+	db_open(dbFile, LOG_OPEN | LOG_QUERY_STMT | LOG_QUERY_ROW, (openR) => {
+		if( openR.dbC == null ) {
+			queryOcCallerCb(openR.r, opRows);
+		} else {
+
+		db_query(openR.dbC, sqlStmt, opRows,
 		() => {
 			var err = 0;
 			var r = { "rc" : 0, "msg" : "" };
 
 			// no ordering requirement for the below close and send
-			db_close(dbC, dbFile);
+			db_close(openR.dbC, dbFile);
 
 			if( err ) {
 				r["rc"] = 1;
@@ -120,15 +130,13 @@ function db_queryoc(dbFile, sqlStmt, queryOcCallerCb)
 
 			// call back
 			queryOcCallerCb(r, opRows);
+		}); // end db-query lambda, db_query()
 		}
-	);
+	}); // end db_open lambda, db_open()
 }
 
 function db_run(dbC, sqlStmt, params, runCallerCb)
 {
-	// @todo delete below line
-	// db.run('INSERT INTO users(name, age) VALUES(?, ?)', ['Raiko',29], (err) => {
-
 	if( dbLogBits & LOG_EXEC_STMT ) {
 		console.log(myutil.fmtDate() + 'db_exec() : ' + sqlStmt + " params=[" + params + "]");
 	}
@@ -147,16 +155,16 @@ function db_run(dbC, sqlStmt, params, runCallerCb)
 
 function db_runoc(dbFile, sqlStmt, sqlParams, runocCallerCb)
 {
-	console.log(myutil.fmtDate() + 'db_runoc() : ' + sqlStmt + " " + sqlParams);
-
-	dbC = db_open(dbFile, LOG_OPEN | LOG_EXEC_STMT);
-	db_run(dbC, sqlStmt, sqlParams,
-			(err) => {
+	db_open(dbFile, LOG_OPEN | LOG_EXEC_STMT, (openR) => {
+		if( openR.dbC == null ) {
+			// call back
+			runocCallerCb(openR.r);
+		} else {
+			db_run(openR.dbC, sqlStmt, sqlParams, (err) => {
 				var r = { "rc" : 0, "msg" : "" };
 
 				// no ordering requirement for the below close and send
-				db_close(dbC, dbFile);
-
+				db_close(openR.dbC, dbFile);
 				if( err ) {
 					r["rc"] = 1;
 					r["msg"] = err.message;
@@ -165,11 +173,11 @@ function db_runoc(dbFile, sqlStmt, sqlParams, runocCallerCb)
 						+ sqlStmt + ' ' + sqlParams + '. '
 						+ r.msg + " (rc=" + r.rc + ")");
 				}
-
 				// call back
 				runocCallerCb(r);
-			} // end (err) lambda
-	); // end db.run()
+			}); // end db_run(err) lambda, db.run()
+		}
+	});
 }
 
 
