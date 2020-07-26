@@ -46,6 +46,9 @@ function db_open(dbFile, logBits)
 	dbC = new sqlite3.Database(dbFile, sqlite3.OPEN_READWRITE, 
 		(err) => {
 			if (err) {
+				console.log(myutil.fmtDate() + 'db_open() failed. DB='
+							+ dbFile
+							+ err.message);
 				return console.error(err.message);
 			}
 			if( dbLogBits & LOG_OPEN ) {
