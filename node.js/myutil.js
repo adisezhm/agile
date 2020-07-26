@@ -26,5 +26,7 @@ const momentTz = require('moment-timezone');
 
 function fmtDate()
 {
-	return moment().format('YYYY-MM-DD HH:mm:ss ZZ ') + momentTz.tz.guess() + ' ';
+	return moment().format('YYYY-MM-DD HH:mm:ss Z ');
 }
+
+// console.log( "Test fmtDate() currentTime = " + fmtDate() );

@@ -98,8 +98,6 @@ function db_query(dbC, sqlStmt, rows, callerCb)
 
 function db_queryoc(dbFile, sqlStmt, queryOcCallerCb)
 {
-	console.log(myutil.fmtDate() + 'db_queryoc() : ' + sqlStmt);
-
 	var opRows = new Array();
 
 	dbC = db_open(dbFile, LOG_OPEN | LOG_QUERY_STMT | LOG_QUERY_ROW);
